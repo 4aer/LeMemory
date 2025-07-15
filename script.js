@@ -131,32 +131,47 @@ class AudioController {
   }
 }
 
-// Best score management
-const bestScore = {
-  get() {
-    const saved = localStorage.getItem('lebron-memory-best');
-    return saved ? JSON.parse(saved) : {};
-  },
-  
-  set(difficulty, flips) {
-    const scores = this.get();
-    const key = `diff-${difficulty}`;
-    if (!scores[key] || flips < scores[key]) {
-      scores[key] = flips;
-      localStorage.setItem('lebron-memory-best', JSON.stringify(scores));
-      return true; // New record
+// Best score manager
+class BestScoreManager {
+  getScores() {
+    try {
+      const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.BEST_SCORES);
+      return saved ? JSON.parse(saved) : {};
+    } catch (error) {
+      console.warn('Could not retrieve best scores:', error);
+      return {};
     }
-    return false;
-  },
-  
+  }
+
+  setScore(difficulty, flips) {
+    try {
+      const scores = this.getScores();
+      const key = `diff-${difficulty}`;
+      const isNewRecord = !scores[key] || flips < scores[key];
+      
+      if (isNewRecord) {
+        scores[key] = flips;
+        localStorage.setItem(CONFIG.STORAGE_KEYS.BEST_SCORES, JSON.stringify(scores));
+      }
+      
+      return isNewRecord;
+    } catch (error) {
+      console.warn('Could not save best score:', error);
+      return false;
+    }
+  }
+
   display() {
-    const scores = this.get();
+    const scores = this.getScores();
     const key = `diff-${gameState.difficulty}`;
     const best = scores[key];
-    document.getElementById('best-score').textContent = 
-      best ? `Best: ${best} flips` : 'Best: --';
+    const bestScoreElement = document.getElementById('best-score');
+    
+    if (bestScoreElement) {
+      bestScoreElement.textContent = best ? `Best: ${best} flips` : 'Best: --';
+    }
   }
-};
+}
 
 // Game functions
 function createCards() {
