@@ -27,19 +27,64 @@ const CONFIG = {
 };
 
 // Game state
-let gameState = {
-  isPlaying: false,
-  isPaused: false,
-  difficulty: 12,
-  timeLimit: 100,
-  timeRemaining: 100,
-  flips: 0,
-  matchedCards: [],
-  cardToCheck: null,
-  timer: null,
-  cards: [],
-  isMuted: false
-};
+class GameState {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.isPlaying = false;
+    this.isPaused = false;
+    this.difficulty = 12;
+    this.timeLimit = 100;
+    this.timeRemaining = 100;
+    this.flips = 0;
+    this.matchedCards = [];
+    this.cardToCheck = null;
+    this.timer = null;
+    this.cards = [];
+    this.isMuted = false;
+  }
+
+  startTimer() {
+    this.timer = setInterval(() => {
+      this.timeRemaining--;
+      this.updateUI();
+      
+      if (this.timeRemaining <= 0) {
+        gameController.endGame(false);
+      }
+    }, 1000);
+  }
+
+  stopTimer() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+
+  updateUI() {
+    const timeElement = document.getElementById('time-remaining');
+    const flipsElement = document.getElementById('flips');
+    
+    if (timeElement) timeElement.textContent = this.timeRemaining;
+    if (flipsElement) flipsElement.textContent = this.flips;
+  }
+
+  incrementFlips() {
+    this.flips++;
+    this.updateUI();
+  }
+
+  addMatchedCards(card1, card2) {
+    this.matchedCards.push(card1, card2);
+  }
+
+  isGameComplete() {
+    return this.matchedCards.length === this.cards.length;
+  }
+}
 
 // Audio controller
 const audio = {
