@@ -233,117 +233,145 @@ class CardManager {
   }
 }
 
-function startGame() {
-  gameState.isPlaying = true;
-  gameState.timeRemaining = gameState.timeLimit;
-  gameState.flips = 0;
-  gameState.matchedCards = [];
-  gameState.cardToCheck = null;
-  
-  // Reset UI
-  document.getElementById('time-remaining').textContent = gameState.timeRemaining;
-  document.getElementById('flips').textContent = gameState.flips;
-  
-  // Reset cards
-  gameState.cards.forEach(card => {
-    card.classList.remove('visible', 'matched');
-  });
-  
-  // Start timer
-  gameState.timer = setInterval(() => {
-    gameState.timeRemaining--;
-    document.getElementById('time-remaining').textContent = gameState.timeRemaining;
-    
-    if (gameState.timeRemaining <= 0) {
-      endGame(false);
-    }
-  }, 1000);
-  
-  shuffleCards();
-  audio.play('bgm');
-  bestScore.display();
-}
-
-function flipCard(card) {
-  if (!gameState.isPlaying || 
-      gameState.matchedCards.includes(card) || 
-      card === gameState.cardToCheck ||
-      card.classList.contains('visible')) {
-    return;
+// Main game controller
+class GameController {
+  constructor() {
+    this.audioController = new AudioController();
+    this.bestScoreManager = new BestScoreManager();
+    this.cardManager = new CardManager();
+    this.uiManager = new UIManager();
   }
-  
-  audio.play('flip');
-  gameState.flips++;
-  document.getElementById('flips').textContent = gameState.flips;
-  
-  card.classList.add('visible');
-  
-  if (gameState.cardToCheck) {
-    checkForMatch(card);
-  } else {
-    gameState.cardToCheck = card;
-  }
-}
 
-function checkForMatch(card) {
-  const isMatch = getCardImage(card) === getCardImage(gameState.cardToCheck);
-  
-  if (isMatch) {
-    handleMatch(card, gameState.cardToCheck);
-  } else {
-    handleMismatch(card, gameState.cardToCheck);
-  }
-  
-  gameState.cardToCheck = null;
-}
-
-function handleMatch(card1, card2) {
-  gameState.matchedCards.push(card1, card2);
-  card1.classList.add('matched');
-  card2.classList.add('matched');
-  
-  audio.play('match');
-  
-  // Check for victory
-  if (gameState.matchedCards.length === gameState.cards.length) {
-    setTimeout(() => endGame(true), 500);
-  }
-}
-
-function handleMismatch(card1, card2) {
-  gameState.isPlaying = false;
-  
-  setTimeout(() => {
-    card1.classList.remove('visible');
-    card2.classList.remove('visible');
+  async startGame() {
     gameState.isPlaying = true;
-  }, 1000);
-}
-
-function getCardImage(card) {
-  return card.querySelector('.card-value').src;
-}
-
-function endGame(victory) {
-  gameState.isPlaying = false;
-  clearInterval(gameState.timer);
-  audio.stop('bgm');
-  
-  if (victory) {
-    const isNewRecord = bestScore.set(gameState.difficulty, gameState.flips);
-    showOverlay('victory-overlay');
+    gameState.timeRemaining = gameState.timeLimit;
+    gameState.flips = 0;
+    gameState.matchedCards = [];
+    gameState.cardToCheck = null;
     
-    if (isNewRecord) {
-      document.getElementById('new-record').classList.remove('hidden');
+    gameState.updateUI();
+    this.cardManager.resetCards();
+    this.cardManager.shuffleCards();
+    
+    gameState.startTimer();
+    await this.audioController.play('bgm');
+    this.bestScoreManager.display();
+  }
+
+  flipCard(card) {
+    if (!this.canFlipCard(card)) return;
+    
+    this.audioController.play('flip');
+    gameState.incrementFlips();
+    card.classList.add('visible');
+    
+    if (gameState.cardToCheck) {
+      this.checkForMatch(card);
+    } else {
+      gameState.cardToCheck = card;
+    }
+  }
+
+  canFlipCard(card) {
+    return gameState.isPlaying && 
+           !gameState.matchedCards.includes(card) && 
+           card !== gameState.cardToCheck &&
+           !card.classList.contains('visible');
+  }
+
+  checkForMatch(card) {
+    const cardImage = this.cardManager.getCardImage(card);
+    const checkCardImage = this.cardManager.getCardImage(gameState.cardToCheck);
+    const isMatch = cardImage === checkCardImage;
+    
+    if (isMatch) {
+      this.handleMatch(card, gameState.cardToCheck);
+    } else {
+      this.handleMismatch(card, gameState.cardToCheck);
     }
     
-    audio.play('victory');
-  } else {
-    showOverlay('game-over-overlay');
-    audio.play('gameOver');
+    gameState.cardToCheck = null;
   }
-  
-  bestScore.display();
+
+  async handleMatch(card1, card2) {
+    gameState.addMatchedCards(card1, card2);
+    card1.classList.add('matched');
+    card2.classList.add('matched');
+    
+    await this.audioController.play('match');
+    
+    if (gameState.isGameComplete()) {
+      setTimeout(() => this.endGame(true), CONFIG.DELAYS.VICTORY_DELAY);
+    }
+  }
+
+  handleMismatch(card1, card2) {
+    gameState.isPlaying = false;
+    
+    setTimeout(() => {
+      card1.classList.remove('visible');
+      card2.classList.remove('visible');
+      gameState.isPlaying = true;
+    }, CONFIG.DELAYS.CARD_FLIP_BACK);
+  }
+
+  async endGame(victory) {
+    gameState.isPlaying = false;
+    gameState.stopTimer();
+    this.audioController.stop('bgm');
+    
+    if (victory) {
+      const isNewRecord = this.bestScoreManager.setScore(gameState.difficulty, gameState.flips);
+      this.uiManager.showOverlay('victory-overlay');
+      
+      if (isNewRecord) {
+        this.uiManager.showNewRecord();
+      }
+      
+      await this.audioController.play('victory');
+    } else {
+      this.uiManager.showOverlay('game-over-overlay');
+      await this.audioController.play('gameOver');
+    }
+    
+    this.bestScoreManager.display();
+  }
+
+  setDifficulty(difficulty, timeLimit) {
+    gameState.difficulty = difficulty;
+    gameState.timeLimit = timeLimit;
+    
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.DIFFICULTY, difficulty);
+      localStorage.setItem(CONFIG.STORAGE_KEYS.TIME_LIMIT, timeLimit);
+    } catch (error) {
+      console.warn('Could not save difficulty settings:', error);
+    }
+    
+    this.cardManager.createCards();
+    this.bestScoreManager.display();
+  }
+
+  loadSettings() {
+    try {
+      const savedDifficulty = localStorage.getItem(CONFIG.STORAGE_KEYS.DIFFICULTY);
+      const savedTimeLimit = localStorage.getItem(CONFIG.STORAGE_KEYS.TIME_LIMIT);
+      
+      if (savedDifficulty && savedTimeLimit) {
+        gameState.difficulty = parseInt(savedDifficulty);
+        gameState.timeLimit = parseInt(savedTimeLimit);
+      }
+    } catch (error) {
+      console.warn('Could not load settings:', error);
+    }
+  }
+
+  init() {
+    this.loadSettings();
+    this.cardManager.createCards();
+    this.bestScoreManager.display();
+    this.uiManager.init();
+  }
 }
 
 function showOverlay(overlayId) {
