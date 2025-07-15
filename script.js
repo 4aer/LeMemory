@@ -1,20 +1,30 @@
-// Game configuration
-const CARD_IMAGES = [
-  'ClevelandBron1.png', 'ClevelandBron1.png',
-  'HSbron.png', 'HSbron.png',
-  'ClevelandBron2.png', 'ClevelandBron2.png',
-  'LakerBron.png', 'LakerBron.png',
-  'HeatBron.png', 'HeatBron.png',
-  'GilasBron.png', 'GilasBron.png',
-  'LebronQuiapo.png', 'LebronQuiapo.png',
-  'LebronJeep.png', 'LebronJeep.png',
-  'LeArner.png', 'LeArner.png',
-  'LeSunshine.png', 'LeSunshine.png',
-  'LeIGlive.png', 'LeIGlive.png',
-  'LePodcast.png', 'LePodcast.png'
-];
-
-const CARD_BACK_IMAGE = 'LBJ LOGO.png';
+// Game configuration - Using const for immutable data
+const CONFIG = {
+  CARD_IMAGES: [
+    'ClevelandBron1.png', 'ClevelandBron1.png',
+    'HSbron.png', 'HSbron.png',
+    'ClevelandBron2.png', 'ClevelandBron2.png',
+    'LakerBron.png', 'LakerBron.png',
+    'HeatBron.png', 'HeatBron.png',
+    'GilasBron.png', 'GilasBron.png',
+    'LebronQuiapo.png', 'LebronQuiapo.png',
+    'LebronJeep.png', 'LebronJeep.png',
+    'LeArner.png', 'LeArner.png',
+    'LeHoly.png', 'LeHoly.png',
+    'LeIGlive.png', 'LeIGlive.png',
+    'LePodcast.png', 'LePodcast.png'
+  ],
+  CARD_BACK_IMAGE: 'LBJ LOGO.png',
+  STORAGE_KEYS: {
+    BEST_SCORES: 'lebron-memory-best',
+    DIFFICULTY: 'lebron-difficulty',
+    TIME_LIMIT: 'lebron-time-limit'
+  },
+  DELAYS: {
+    CARD_FLIP_BACK: 1000,
+    VICTORY_DELAY: 500
+  }
+};
 
 // Game state
 let gameState = {
