@@ -87,27 +87,49 @@ class GameState {
 }
 
 // Audio controller
-const audio = {
-  bgm: document.getElementById('bgm'),
-  flip: document.getElementById('flip-sound'),
-  match: document.getElementById('match-sound'),
-  victory: document.getElementById('victory-sound'),
-  gameOver: document.getElementById('game-over-sound'),
-  
-  play(sound) {
-    if (!gameState.isMuted && this[sound]) {
-      this[sound].currentTime = 0;
-      this[sound].play().catch(() => {});
-    }
-  },
-  
-  stop(sound) {
-    if (this[sound]) {
-      this[sound].pause();
-      this[sound].currentTime = 0;
+class AudioController {
+  constructor() {
+    this.sounds = {
+      bgm: document.getElementById('bgm'),
+      flip: document.getElementById('flip-sound'),
+      match: document.getElementById('match-sound'),
+      victory: document.getElementById('victory-sound'),
+      gameOver: document.getElementById('game-over-sound')
+    };
+  }
+
+  async play(soundName) {
+    const sound = this.sounds[soundName];
+    if (!gameState.isMuted && sound) {
+      try {
+        sound.currentTime = 0;
+        await sound.play();
+      } catch (error) {
+        console.warn(`Could not play sound: ${soundName}`, error);
+      }
     }
   }
-};
+
+  stop(soundName) {
+    const sound = this.sounds[soundName];
+    if (sound) {
+      sound.pause();
+      sound.currentTime = 0;
+    }
+  }
+
+  toggleMute() {
+    gameState.isMuted = !gameState.isMuted;
+    const muteBtn = document.getElementById('mute-btn');
+    muteBtn?.classList.toggle('muted');
+    
+    if (gameState.isMuted) {
+      this.stop('bgm');
+    } else if (gameState.isPlaying) {
+      this.play('bgm');
+    }
+  }
+}
 
 // Best score management
 const bestScore = {
