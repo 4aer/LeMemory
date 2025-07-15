@@ -173,45 +173,63 @@ class BestScoreManager {
   }
 }
 
-// Game functions
-function createCards() {
-  const container = document.querySelector('.game-container');
-  const gameInfoContainer = container.querySelector('.game-info-container');
-  
-  // Clear existing cards
-  container.querySelectorAll('.card').forEach(card => card.remove());
-  
-  // Calculate number of cards based on difficulty
-  const numCards = 24 - gameState.difficulty;
-  const cardImages = CARD_IMAGES.slice(0, numCards);
-  
-  cardImages.forEach((imageName, index) => {
+// Card manager for better separation of concerns
+class CardManager {
+  constructor() {
+    this.container = document.querySelector('.game-container');
+  }
+
+  createCards() {
+    // Clear existing cards
+    this.container.querySelectorAll('.card').forEach(card => card.remove());
+    
+    const numCards = 24 - gameState.difficulty;
+    const cardImages = CONFIG.CARD_IMAGES.slice(0, numCards);
+    
+    cardImages.forEach((imageName) => {
+      const card = this.createCard(imageName);
+      this.container.appendChild(card);
+    });
+    
+    gameState.cards = Array.from(this.container.querySelectorAll('.card'));
+  }
+
+  createCard(imageName) {
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
       <div class="card-back card-face">
-        <img class="card-back-img" src="Assets/Images/${CARD_BACK_IMAGE}" alt="Card back">
+        <img class="card-back-img" src="Assets/Images/${CONFIG.CARD_BACK_IMAGE}" alt="Card back">
       </div>
       <div class="card-front card-face">
         <img class="card-value" src="Assets/Images/${imageName}" alt="LeBron card">
       </div>
     `;
     
-    card.addEventListener('click', () => flipCard(card));
-    container.appendChild(card);
-  });
-  
-  gameState.cards = Array.from(container.querySelectorAll('.card'));
-}
+    card.addEventListener('click', () => gameController.flipCard(card));
+    return card;
+  }
 
-function shuffleCards() {
-  const container = document.querySelector('.game-container');
-  const cards = Array.from(container.querySelectorAll('.card'));
-  
-  for (let i = cards.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    cards[i].style.order = j;
-    cards[j].style.order = i;
+  shuffleCards() {
+    const cards = Array.from(this.container.querySelectorAll('.card'));
+    
+    // Fisher-Yates shuffle algorithm
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      cards[i].style.order = j;
+      cards[j].style.order = i;
+    }
+  }
+
+  resetCards() {
+    gameState.cards.forEach(card => {
+      card.classList.remove('visible', 'matched');
+    });
+  }
+
+  getCardImage(card) {
+    const cardValue = card.querySelector('.card-value');
+    return cardValue ? cardValue.src : null;
   }
 }
 
