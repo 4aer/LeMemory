@@ -374,83 +374,90 @@ class GameController {
   }
 }
 
-function showOverlay(overlayId) {
-  document.querySelectorAll('.overlay').forEach(overlay => {
-    overlay.classList.add('hidden');
-  });
-  document.getElementById(overlayId).classList.remove('hidden');
+// UI Manager for better organization
+class UIManager {
+  showOverlay(overlayId) {
+    document.querySelectorAll('.overlay').forEach(overlay => {
+      overlay.classList.add('hidden');
+    });
+    document.getElementById(overlayId)?.classList.remove('hidden');
+  }
+
+  hideOverlay(overlayId) {
+    document.getElementById(overlayId)?.classList.add('hidden');
+  }
+
+  showNewRecord() {
+    document.getElementById('new-record')?.classList.remove('hidden');
+  }
+
+  hideNewRecord() {
+    document.getElementById('new-record')?.classList.add('hidden');
+  }
+
+  showSettings() {
+    document.getElementById('settings-modal')?.classList.remove('hidden');
+  }
+
+  hideSettings() {
+    document.getElementById('settings-modal')?.classList.add('hidden');
+  }
+
+  init() {
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    // Settings button
+    document.getElementById('settings-btn')?.addEventListener('click', () => {
+      this.showSettings();
+    });
+
+    // Settings modal click outside to close
+    document.getElementById('settings-modal')?.addEventListener('click', (e) => {
+      if (e.target.classList.contains('settings-modal')) {
+        this.hideSettings();
+      }
+    });
+
+    // Mute button
+    document.getElementById('mute-btn')?.addEventListener('click', () => {
+      gameController.audioController.toggleMute();
+    });
+
+    // Difficulty buttons
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const difficulty = parseInt(btn.dataset.difficulty);
+        const timeLimit = parseInt(btn.dataset.time);
+        gameController.setDifficulty(difficulty, timeLimit);
+        this.hideSettings();
+      });
+    });
+
+    // Overlay clicks
+    document.querySelectorAll('.overlay').forEach(overlay => {
+      overlay.addEventListener('click', () => {
+        this.hideOverlay(overlay.id);
+        this.hideNewRecord();
+        gameController.startGame();
+      });
+    });
+  }
 }
 
-function setDifficulty(difficulty, timeLimit) {
-  gameState.difficulty = difficulty;
-  gameState.timeLimit = timeLimit;
-  localStorage.setItem('lebron-difficulty', difficulty);
-  localStorage.setItem('lebron-time-limit', timeLimit);
-  
-  createCards();
-  bestScore.display();
-}
+// Initialize game instances
+const gameState = new GameState();
+const gameController = new GameController();
 
-// Event listeners
-document.getElementById('settings-btn').addEventListener('click', () => {
-  document.getElementById('settings-modal').classList.remove('hidden');
-});
+// Initialize when DOM is ready
+const initGame = () => {
+  gameController.init();
+};
 
-document.getElementById('settings-modal').addEventListener('click', (e) => {
-  if (e.target.classList.contains('settings-modal')) {
-    document.getElementById('settings-modal').classList.add('hidden');
-  }
-});
-
-document.getElementById('mute-btn').addEventListener('click', () => {
-  gameState.isMuted = !gameState.isMuted;
-  const btn = document.getElementById('mute-btn');
-  btn.classList.toggle('muted');
-  
-  if (gameState.isMuted) {
-    audio.stop('bgm');
-  } else if (gameState.isPlaying) {
-    audio.play('bgm');
-  }
-});
-
-// Difficulty buttons
-document.querySelectorAll('.difficulty-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const difficulty = parseInt(btn.dataset.difficulty);
-    const timeLimit = parseInt(btn.dataset.time);
-    setDifficulty(difficulty, timeLimit);
-    document.getElementById('settings-modal').classList.add('hidden');
-  });
-});
-
-// Overlay clicks
-document.querySelectorAll('.overlay').forEach(overlay => {
-  overlay.addEventListener('click', () => {
-    overlay.classList.add('hidden');
-    document.getElementById('new-record').classList.add('hidden');
-    startGame();
-  });
-});
-
-// Initialize game
-function init() {
-  // Load saved settings
-  const savedDifficulty = localStorage.getItem('lebron-difficulty');
-  const savedTimeLimit = localStorage.getItem('lebron-time-limit');
-  
-  if (savedDifficulty && savedTimeLimit) {
-    gameState.difficulty = parseInt(savedDifficulty);
-    gameState.timeLimit = parseInt(savedTimeLimit);
-  }
-  
-  createCards();
-  bestScore.display();
-}
-
-// Start when page loads
+// Use modern event listener approach
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', initGame);
 } else {
-  init();
+  initGame();
 }
