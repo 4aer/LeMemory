@@ -16,7 +16,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-image: url("Assets/Images/LeMad-Background.jpg");
+  background-image: url("Assets/Images/LebronBackground.jpg");
   background-size: cover;
   background-position: center;
   margin: 0;
@@ -363,12 +363,15 @@ audio {
   position: absolute;
   top: 60px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-60%);
   width: 120px;
   z-index: 1001;
   background: #333;
   border-radius: 8px;
   accent-color: #FDBB30;
+  appearance: slider-vertical; /* For some browsers */
+  height: 120px;
+  width: 20px;
 }
 
 #volume-slider.hidden {
