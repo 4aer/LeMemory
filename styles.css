@@ -351,3 +351,26 @@ body {
 audio {
   display: none;
 }
+
+.sound-control {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#volume-slider {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  z-index: 1001;
+  background: #333;
+  border-radius: 8px;
+  accent-color: #FDBB30;
+}
+
+#volume-slider.hidden {
+  display: none;
+}
