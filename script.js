@@ -10,7 +10,7 @@ const CONFIG = {
     'LebronQuiapo.png', 'LebronQuiapo.png',
     'LebronJeep.png', 'LebronJeep.png',
     'LeArner.png', 'LeArner.png',
-    'LeHoly.png', 'LeHoly.png',
+    'LeSunshine.png', 'LeSunshine.png',
     'LeIGlive.png', 'LeIGlive.png',
     'LePodcast.png', 'LePodcast.png'
   ],
@@ -371,6 +371,7 @@ class GameController {
     }
     
     this.cardManager.createCards();
+    this.cardManager.shuffleCards();
     this.bestScoreManager.display();
   }
 
