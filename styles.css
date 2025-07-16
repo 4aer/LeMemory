@@ -16,7 +16,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-image: url("Assets/Images/LebronBackground.jpg");
+  background-image: url("Assets/Images/LeBackground.png");
   background-size: cover;
   background-position: center;
   margin: 0;
@@ -369,7 +369,7 @@ audio {
   background: #333;
   border-radius: 8px;
   accent-color: #FDBB30;
-  appearance: slider-vertical; /* For some browsers */
+  appearance: slider-vertical; 
   height: 120px;
   width: 20px;
 }
