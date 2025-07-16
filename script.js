@@ -96,6 +96,40 @@ class AudioController {
       victory: document.getElementById('victory-sound'),
       gameOver: document.getElementById('game-over-sound')
     };
+    this.volume = 1;
+    this.slider = document.getElementById('volume-slider');
+    this.initVolumeControl();
+  }
+
+  initVolumeControl() {
+    // show/hide slider on mute button click
+    const muteBtn = document.getElementById('mute-btn');
+    muteBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.slider.classList.toggle('hidden');
+    });
+
+    // hide slider if clicking outside
+    document.addEventListener('click', (e) => {
+      if (!this.slider.classList.contains('hidden') && !e.target.closest('.sound-control')) {
+        this.slider.classList.add('hidden');
+      }
+    });
+
+    // change volume for all sounds
+    this.slider?.addEventListener('input', () => {
+      this.setVolume(parseFloat(this.slider.value));
+    });
+
+    // initial volume
+    this.setVolume(this.slider?.value || 1);
+  }
+
+  setVolume(value) {
+    this.volume = value;
+    Object.values(this.sounds).forEach(audio => {
+      if (audio) audio.volume = value;
+    });
   }
 
   async play(soundName) {
@@ -115,18 +149,6 @@ class AudioController {
     if (sound) {
       sound.pause();
       sound.currentTime = 0;
-    }
-  }
-
-  toggleMute() {
-    gameState.isMuted = !gameState.isMuted;
-    const muteBtn = document.getElementById('mute-btn');
-    muteBtn?.classList.toggle('muted');
-    
-    if (gameState.isMuted) {
-      this.stop('bgm');
-    } else if (gameState.isPlaying) {
-      this.play('bgm');
     }
   }
 }
