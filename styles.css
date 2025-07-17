@@ -53,14 +53,7 @@ body {
 
 #settings-btn {
   background-image: url("Assets/Images/SettingsButton.png");
-}
-
-#mute-btn {
-  background-image: url("Assets/Images/SoundOn.png");
-}
-
-#mute-btn.muted {
-  background-image: url("Assets/Images/SoundOff.png");
+  background-color: transparent;
 }
 
 /* Settings Modal */
@@ -111,9 +104,21 @@ body {
   justify-items: center;
 }
 
+.difficulty-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  width: 300px;
+  height: 191px;
+  margin: 0 auto;
+  display: flex;
+}
+
 .difficulty-btn {
   width: 300px;
   height: 191px;
+  padding: 0;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -121,30 +126,86 @@ body {
   background-size: cover;
 }
 
-.difficulty-btn:hover {
-  transform: translateY(-5px);
+.difficulty-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.3s ease;
+  border-radius: 12px;
 }
 
-.difficulty-btn:active {
-  transform: translateY(2px);
+.difficulty-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px;
 }
 
-.difficulty-btn.easy { background-image: url("Assets/Images/easy.png"); }
-.difficulty-btn.medium { background-image: url("Assets/Images/medium.png"); }
-.difficulty-btn.hard { background-image: url("Assets/Images/hard.png"); }
-.difficulty-btn.extreme { background-image: url("Assets/Images/extreme.png"); }
+.difficulty-label {
+  color: white;
+  font-size: 2.5em;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-shadow: 2px 2px 8px #000;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
 
-.difficulty-btn.easy:hover { background-image: url("Assets/Images/easyhover.png"); }
-.difficulty-btn.medium:hover { background-image: url("Assets/Images/mediumhover.png"); }
-.difficulty-btn.hard:hover { background-image: url("Assets/Images/hardhover.png"); }
-.difficulty-btn.extreme:hover { background-image: url("Assets/Images/extremehover.png"); }
+.difficulty-item:hover .difficulty-image {
+  filter: blur(3px);
+}
+
+.difficulty-item:hover .difficulty-overlay {
+  opacity: 1;
+}
+
+#sound-btn {
+  background-image: url("Assets/Images/SoundOn.png");
+  background-color: transparent;
+}
+
+audio {
+  display: none;
+}
+
+.sound-control {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#volume-slider {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-60%);
+  width: 120px;
+  z-index: 1001;
+  background: #333;
+  border-radius: 8px;
+  accent-color: #FDBB30;
+  appearance: slider-vertical; 
+  height: 120px;
+  width: 20px;
+}
+
+#volume-slider.hidden {
+  display: none;
+}
 
 /* Game Title */
 .page-title {
   color: #860038;
   font-weight: normal;
   text-align: center;
-  font-size: 6em;
+  font-size: 4.5em;
   margin: 20px 0;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
@@ -399,35 +460,4 @@ body {
   .overlay {
     font-size: 5em;
   }
-}
-
-/* Audio elements (hidden) */
-audio {
-  display: none;
-}
-
-.sound-control {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#volume-slider {
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-60%);
-  width: 120px;
-  z-index: 1001;
-  background: #333;
-  border-radius: 8px;
-  accent-color: #FDBB30;
-  appearance: slider-vertical; 
-  height: 120px;
-  width: 20px;
-}
-
-#volume-slider.hidden {
-  display: none;
 }
