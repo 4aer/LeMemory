@@ -12,7 +12,11 @@ const CONFIG = {
     'LeArner.png', 'LeArner.png',
     'LeSunshine.png', 'LeSunshine.png',
     'LeIGlive.png', 'LeIGlive.png',
-    'LePodcast.png', 'LePodcast.png'
+    'LePodcast.png', 'LePodcast.png',
+    'LeZapote.png', 'LeZapote.png',
+    'LeMaid.png', 'LeMaid.png',
+    'LeMeat.png', 'LeMeat.png',
+    'LeFreaky.png', 'LeFreaky.png',
   ],
   CARD_BACK_IMAGE: 'LBJ LOGO.png',
   STORAGE_KEYS: {
@@ -204,15 +208,26 @@ class CardManager {
   createCards() {
     // Clear existing cards
     this.container.querySelectorAll('.card').forEach(card => card.remove());
-    
-    const numCards = 24 - gameState.difficulty;
+
+    let numCards = 24 - gameState.difficulty;
+    let gridColumns = 4;
+
+    // LeImpossible: 6x6 grid, 36 cards
+    if (gameState.difficulty === -12) {
+      numCards = 36;
+      gridColumns = 6;
+    }
+
+    // Adjust grid for LeImpossible
+    this.container.style.gridTemplateColumns = `repeat(${gridColumns}, auto)`;
+
     const cardImages = CONFIG.CARD_IMAGES.slice(0, numCards);
-    
+
     cardImages.forEach((imageName) => {
       const card = this.createCard(imageName);
       this.container.appendChild(card);
     });
-    
+
     gameState.cards = Array.from(this.container.querySelectorAll('.card'));
   }
 
@@ -362,6 +377,7 @@ class GameController {
   setDifficulty(difficulty, timeLimit) {
     gameState.difficulty = difficulty;
     gameState.timeLimit = timeLimit;
+    gameState.timeRemaining = timeLimit;
     
     try {
       localStorage.setItem(CONFIG.STORAGE_KEYS.DIFFICULTY, difficulty);
@@ -373,6 +389,7 @@ class GameController {
     this.cardManager.createCards();
     this.cardManager.shuffleCards();
     this.bestScoreManager.display();
+    gameState.updateUI();
   }
 
   loadSettings() {

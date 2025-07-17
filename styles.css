@@ -130,11 +130,13 @@ body {
 .difficulty-btn.medium { background-image: url("Assets/Images/medium.png"); }
 .difficulty-btn.hard { background-image: url("Assets/Images/hard.png"); }
 .difficulty-btn.extreme { background-image: url("Assets/Images/extreme.png"); }
+.difficulty-btn.impossible { background-image: url("Assets/Images/impossible.png"); }
 
 .difficulty-btn.easy:hover { background-image: url("Assets/Images/easyhover.png"); }
 .difficulty-btn.medium:hover { background-image: url("Assets/Images/mediumhover.png"); }
 .difficulty-btn.hard:hover { background-image: url("Assets/Images/hardhover.png"); }
 .difficulty-btn.extreme:hover { background-image: url("Assets/Images/extremehover.png"); }
+.difficulty-btn.impossible:hover { background-image: url("Assets/Images/impossiblehover.png"); }
 
 /* Game Title */
 .page-title {
