@@ -237,7 +237,7 @@ class BestScoreManager {
 // Card manager for better separation of concerns
 class CardManager {
   constructor() {
-    this.container = document.querySelector('.game-container');
+    this.container = document.querySelector('.card-container');
   }
 
   createCards() {
@@ -521,7 +521,7 @@ class UIManager {
       gameController.bestScoreManager.displayAll();
     });
 
-    // Mute button
+    // Sound button
     document.getElementById('sound-btn')?.addEventListener('click', () => {
       gameController.audioController.toggleMute();
     });

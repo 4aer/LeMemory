@@ -211,7 +211,7 @@ audio {
 }
 
 /* Game Container */
-.game-container {
+.card-container {
   display: grid;
   grid-template-columns: repeat(4, auto);
   grid-gap: 10px;
@@ -223,9 +223,10 @@ audio {
 /* Game Info */
 .game-info-container {
   grid-column: 1 / -1;
+  grid-gap: 24em;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .game-info {
