@@ -11,7 +11,7 @@
 <div class="header-controls">
   <button id="settings-btn" class="control-btn" title="Settings"></button>
   <div class="sound-control">
-    <button id="mute-btn" class="control-btn" title="Toggle Sound"></button>
+    <button id="sound-btn" class="control-btn" title="Toggle Sound"></button>
     <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1" class="hidden">
   </div>
 </div>
@@ -47,10 +47,42 @@
     <div class="settings-content">
       <div class="settings-title">CHOOSE DIFFICULTY</div>
       <div class="difficulty-grid">
-        <button class="difficulty-btn easy" data-difficulty="12" data-time="120"></button>
-        <button class="difficulty-btn medium" data-difficulty="8" data-time="90"></button>
-        <button class="difficulty-btn hard" data-difficulty="4" data-time="60"></button>
-        <button class="difficulty-btn extreme" data-difficulty="0" data-time="45"></button>
+        <div class="difficulty-item">
+          <button class="difficulty-btn easy" data-difficulty="12" data-time="120">
+            <img src="Assets/Images/easy.png" alt="LeEasy" class="difficulty-image">
+            <div class="difficulty-overlay">
+              <span class="difficulty-label">LeEasy</span>
+              <span class="difficulty-label">12 Cards</span>
+            </div>
+          </button>
+        </div>
+        <div class="difficulty-item">
+          <button class="difficulty-btn medium" data-difficulty="8" data-time="90">
+            <img src="Assets/Images/medium.png" alt="LeMedium" class="difficulty-image">
+            <div class="difficulty-overlay">
+              <span class="difficulty-label">LeMedium</span>
+              <span class="difficulty-label">16 Cards</span>
+            </div>
+          </button>
+        </div>
+        <div class="difficulty-item">
+          <button class="difficulty-btn hard" data-difficulty="4" data-time="60">
+            <img src="Assets/Images/hard.png" alt="LeHard" class="difficulty-image">
+            <div class="difficulty-overlay">
+              <span class="difficulty-label">LeHard</span>
+              <span class="difficulty-label">20 Cards</span>
+            </div>
+          </button>
+        </div>
+        <div class="difficulty-item">
+          <button class="difficulty-btn extreme" data-difficulty="0" data-time="45">
+            <img src="Assets/Images/extreme.png" alt="LeExtreme" class="difficulty-image">
+            <div class="difficulty-overlay">
+              <span class="difficulty-label">LeExtreme</span>
+              <span class="difficulty-label">24 Cards</span>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   </div>
