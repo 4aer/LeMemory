@@ -197,6 +197,42 @@ class BestScoreManager {
       bestScoreElement.textContent = best ? `Best: ${best} flips` : 'Best: --';
     }
   }
+
+  displayAll() {
+    const scores = this.getScores();
+    const difficulties = [
+      { label: 'LeEasy', value: 12 },
+      { label: 'LeMedium', value: 8 },
+      { label: 'LeHard', value: 4 },
+      { label: 'LeExtreme', value: 0 },
+      { label: 'LeImpossible', value: -12 }
+    ];
+    let html = '<div class="best-score-list-title">Best Flip Records</div><ul class="best-score-list">';
+    difficulties.forEach(diff => {
+      const key = `diff-${diff.value}`;
+      const score = scores[key] ? `${scores[key]} flips` : '--';
+      html += `<li>${diff.label}: <span>${score}</span></li>`;
+    });
+    html += '</ul>';
+
+    let modal = document.getElementById('best-score-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'best-score-modal';
+      modal.className = 'best-score-modal';
+      modal.innerHTML = `<div class="best-score-modal-content">${html}<button id="close-best-score-modal">Close</button></div>`;
+      document.body.appendChild(modal);
+      document.getElementById('close-best-score-modal').onclick = () => {
+        modal.classList.add('hidden');
+      };
+    } else {
+      modal.querySelector('.best-score-modal-content').innerHTML = `${html}<button id="close-best-score-modal">Close</button>`;
+      document.getElementById('close-best-score-modal').onclick = () => {
+        modal.classList.add('hidden');
+      };
+    }
+    modal.classList.remove('hidden');
+  }
 }
 
 // Card manager for better separation of concerns
@@ -458,6 +494,11 @@ class UIManager {
       if (e.target.classList.contains('settings-modal')) {
         this.hideSettings();
       }
+    });
+
+    // Best Score button
+    document.getElementById('best-score')?.addEventListener('click', () => {
+      gameController.bestScoreManager.displayAll();
     });
 
     // Mute button
