@@ -105,7 +105,10 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
-  margin-top: 40px;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 650px;
+  justify-items: center;
 }
 
 .difficulty-btn {
@@ -130,13 +133,11 @@ body {
 .difficulty-btn.medium { background-image: url("Assets/Images/medium.png"); }
 .difficulty-btn.hard { background-image: url("Assets/Images/hard.png"); }
 .difficulty-btn.extreme { background-image: url("Assets/Images/extreme.png"); }
-.difficulty-btn.impossible { background-image: url("Assets/Images/impossible.png"); }
 
 .difficulty-btn.easy:hover { background-image: url("Assets/Images/easyhover.png"); }
 .difficulty-btn.medium:hover { background-image: url("Assets/Images/mediumhover.png"); }
 .difficulty-btn.hard:hover { background-image: url("Assets/Images/hardhover.png"); }
 .difficulty-btn.extreme:hover { background-image: url("Assets/Images/extremehover.png"); }
-.difficulty-btn.impossible:hover { background-image: url("Assets/Images/impossiblehover.png"); }
 
 /* Game Title */
 .page-title {
@@ -382,6 +383,7 @@ body {
   .difficulty-grid {
     grid-template-columns: 1fr;
     gap: 15px;
+    max-width: 350px;
   }
 
   .difficulty-btn {

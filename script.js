@@ -204,8 +204,7 @@ class BestScoreManager {
       { label: 'LeEasy', value: 12 },
       { label: 'LeMedium', value: 8 },
       { label: 'LeHard', value: 4 },
-      { label: 'LeExtreme', value: 0 },
-      { label: 'LeImpossible', value: -12 }
+      { label: 'LeExtreme', value: 0 }
     ];
     let html = '<div class="best-score-list-title">Best Flip Records</div><ul class="best-score-list">';
     difficulties.forEach(diff => {
