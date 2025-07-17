@@ -107,7 +107,7 @@ class AudioController {
 
   initVolumeControl() {
     // show/hide slider on mute button click
-    const muteBtn = document.getElementById('mute-btn');
+    const muteBtn = document.getElementById('sound-btn');
     muteBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
       this.slider.classList.toggle('hidden');
@@ -244,17 +244,38 @@ class CardManager {
     // Clear existing cards
     this.container.querySelectorAll('.card').forEach(card => card.remove());
 
-    let numCards = 24 - gameState.difficulty;
-    let gridColumns = 4;
-
-    // LeImpossible: 6x6 grid, 36 cards
-    if (gameState.difficulty === -12) {
-      numCards = 36;
-      gridColumns = 6;
+    let numCards, gridColumns, gridRows;
+    switch (gameState.difficulty) {
+      case 12: // LeEasy: 4x3
+        numCards = 12;
+        gridColumns = 4;
+        gridRows = 3;
+        break;
+      case 8: // LeMedium: 4x4
+        numCards = 16;
+        gridColumns = 4;
+        gridRows = 4;
+        break;
+      case 4: // LeHard: 5x4
+        numCards = 20;
+        gridColumns = 5;
+        gridRows = 4;
+        break;
+      case 0: // LeExtreme: 6x4
+        numCards = 24;
+        gridColumns = 6;
+        gridRows = 4;
+        break;
+      default:
+        numCards = 12;
+        gridColumns = 4;
+        gridRows = 3;
     }
 
-    // Adjust grid for LeImpossible
-    this.container.style.gridTemplateColumns = `repeat(${gridColumns}, auto)`;
+    // Set grid style for container
+    this.container.style.display = 'grid';
+    this.container.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
+    this.container.style.gridTemplateRows = `repeat(${gridRows}, 1fr)`;
 
     const cardImages = CONFIG.CARD_IMAGES.slice(0, numCards);
 
@@ -501,7 +522,7 @@ class UIManager {
     });
 
     // Mute button
-    document.getElementById('mute-btn')?.addEventListener('click', () => {
+    document.getElementById('sound-btn')?.addEventListener('click', () => {
       gameController.audioController.toggleMute();
     });
 
