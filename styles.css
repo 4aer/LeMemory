@@ -321,7 +321,7 @@ audio {
   backface-visibility: hidden;
   border-radius: 12px;
   border: 2px solid;
-  transition: transform 500ms ease-in-out;
+  transition: transform 350ms ease-in-out;
 }
 
 .card-back {

@@ -25,7 +25,7 @@ const CONFIG = {
     TIME_LIMIT: 'lebron-time-limit'
   },
   DELAYS: {
-    CARD_FLIP_BACK: 1000,
+    CARD_FLIP_BACK: 750,
     VICTORY_DELAY: 500
   }
 };
@@ -70,7 +70,7 @@ class GameState {
 
   updateUI() {
     const timeElement = document.getElementById('time-remaining');
-    const flipsElement = document.getElementById('flips');
+    const flipsElement = document.getElementById('flip-count');
     
     if (timeElement) timeElement.textContent = this.timeRemaining;
     if (flipsElement) flipsElement.textContent = this.flips;
@@ -239,7 +239,7 @@ class CardManager {
   constructor() {
     this.container = document.querySelector('.card-container');
   }
-
+ 
   createCards() {
     // Clear existing cards
     this.container.querySelectorAll('.card').forEach(card => card.remove());
@@ -278,6 +278,7 @@ class CardManager {
     this.container.style.gridTemplateRows = `repeat(${gridRows}, 1fr)`;
 
     const cardImages = CONFIG.CARD_IMAGES.slice(0, numCards);
+    this.shuffleArray(cardImages);
 
     cardImages.forEach((imageName) => {
       const card = this.createCard(imageName);
@@ -285,6 +286,14 @@ class CardManager {
     });
 
     gameState.cards = Array.from(this.container.querySelectorAll('.card'));
+  }
+
+  // Shuffle array using Fisher-Yates algorithm
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
   }
 
   createCard(imageName) {
@@ -301,17 +310,6 @@ class CardManager {
     
     card.addEventListener('click', () => gameController.flipCard(card));
     return card;
-  }
-
-  shuffleCards() {
-    const cards = Array.from(this.container.querySelectorAll('.card'));
-    
-    // Fisher-Yates shuffle algorithm
-    for (let i = cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      cards[i].style.order = j;
-      cards[j].style.order = i;
-    }
   }
 
   resetCards() {
@@ -343,9 +341,7 @@ class GameController {
     gameState.cardToCheck = null;
     
     gameState.updateUI();
-    this.cardManager.resetCards();
-    this.cardManager.shuffleCards();
-    
+    this.cardManager.createCards();
     gameState.startTimer();
     await this.audioController.play('bgm');
     this.bestScoreManager.display();
@@ -443,7 +439,7 @@ class GameController {
     }
     
     this.cardManager.createCards();
-    this.cardManager.shuffleCards();
+    this.cardManager.resetCards();
     this.bestScoreManager.display();
     gameState.updateUI();
   }
