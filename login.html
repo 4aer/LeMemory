@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeBron James Memory Game - Login</title>
     <link rel="stylesheet" href="login-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
     <!-- Animated background elements -->
@@ -37,7 +38,9 @@
                     <label class="form-label" for="login-password">Password</label>
                     <div class="password-toggle">
                         <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required>
-                        <button type="button" class="toggle-btn" onclick="togglePassword('login-password')">👁️</button>
+                        <button type="button" class="toggle-btn" onclick="togglePassword('login-password')">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
                     </div>
                 </div>
                 
@@ -72,7 +75,7 @@
                     <label class="form-label" for="register-confirm">Confirm Password</label>
                     <div class="password-toggle">
                         <input type="password" id="register-confirm" class="form-input" placeholder="Confirm your password" required>
-                        <button type="button" class="toggle-btn" onclick="togglePassword('register-confirm')">👁️</button>
+                        <button type="button" class="toggle-btn" onclick="togglePassword('register-confirm')"></button>
                     </div>
                 </div>
                 
@@ -84,7 +87,7 @@
                 <div class="success-message">
                     Welcome to LeMemory! Ready to test your skills?
                 </div>
-                <button class="play-game-btn" onclick="startGame()">🏀 Start Playing</button>
+                <button class="play-game-btn" onclick="startGame()">Start Playing</button>
             </div>
         </div>
     </div>
