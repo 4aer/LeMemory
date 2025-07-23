@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeBron James Memory Game - Logout</title>
+    <link rel="stylesheet" href="logout-styles.css">
+</head>
+<body>
+    <!-- Animated background elements -->
+    <div class="bg-element"></div>
+    <div class="bg-element"></div>
+    <div class="bg-element"></div>
+
+    <div class="logout-container">
+        <h1 class="game-title">LeMemory</h1>
+        <p class="game-subtitle">LeBron James Memory Game</p>
+
+        <div id="message-container"></div>
+
+        <!-- User Dashboard -->
+        <div id="user-dashboard">
+            <div class="user-info">
+                <div class="welcome-message" id="welcome-message">Welcome back, Player!</div>
+                
+                <div class="user-stats">
+                    <div class="stat-label">Your Performance Stats</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">LeEasy</div>
+                            <div class="stat-value" id="easy-best">--</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">LeMedium</div>
+                            <div class="stat-value" id="medium-best">--</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">LeHard</div>
+                            <div class="stat-value" id="hard-best">--</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">LeExtreme</div>
+                            <div class="stat-value" id="extreme-best">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn play-btn" onclick="startGame()">
+                    Continue Playing
+                </button>
+                <button class="action-btn settings-btn" onclick="viewStats()">
+                    View Full Stats
+                </button>
+                <button class="action-btn logout-btn" onclick="showLogoutConfirm()">
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Logged out state -->
+        <div id="logged-out-state" style="display: none;">
+            <div class="logout-message">
+                You have been successfully logged out. Thanks for playing LeMemory!
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn play-btn" onclick="backToLogin()">
+                    Login Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-confirm-modal hidden" id="logout-confirm-modal">
+        <div class="confirm-content">
+            <div class="confirm-title">Confirm Logout</div>
+            <div class="confirm-message">
+                Are you sure you want to logout? Your game progress will be saved, but you'll need to login again to continue playing.
+            </div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-yes" onclick="confirmLogout()">Yes, Logout</button>
+                <button class="confirm-btn confirm-no" onclick="cancelLogout()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userSystem = {
+            users: JSON.parse(localStorage.getItem('lebron-game-users') || '{}'),
+            currentUser: localStorage.getItem('lebron-game-current-user'),
+            
+            getCurrentUser() {
+                return this.currentUser ? this.users[this.currentUser] : null;
+            },
+            
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('lebron-game-current-user');
+            },
+            
+            getBestScores() {
+                try {
+                    const saved = localStorage.getItem('lebron-memory-best');
+                    return saved ? JSON.parse(saved) : {};
+                } catch (error) {
+                    return {};
+                }
+            }
+        };
+
+        // Message system
+        function showMessage(message, type = 'success') {
+            const container = document.getElementById('message-container');
+            const className = type === 'logout' ? 'logout-message' : 'success-message';
+            container.innerHTML = `<div class="${className}">${message}</div>`;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Load user data and stats
+        function loadUserData() {
+            const user = userSystem.getCurrentUser();
+            if (!user) {
+                // User not logged in, redirect to login
+                showLoggedOutState();
+                return;
+            }
+
+            // Update welcome message
+            document.getElementById('welcome-message').textContent = `Welcome back, ${userSystem.currentUser}!`;
+            
+            // Load best scores
+            const bestScores = userSystem.getBestScores();
+            document.getElementById('easy-best').textContent = bestScores['diff-12'] ? `${bestScores['diff-12']} flips` : '--';
+            document.getElementById('medium-best').textContent = bestScores['diff-8'] ? `${bestScores['diff-8']} flips` : '--';
+            document.getElementById('hard-best').textContent = bestScores['diff-4'] ? `${bestScores['diff-4']} flips` : '--';
+            document.getElementById('extreme-best').textContent = bestScores['diff-0'] ? `${bestScores['diff-0']} flips` : '--';
+        }
+
+        // Show logout confirmation modal
+        function showLogoutConfirm() {
+            document.getElementById('logout-confirm-modal').classList.remove('hidden');
+        }
+
+        // Cancel logout
+        function cancelLogout() {
+            document.getElementById('logout-confirm-modal').classList.add('hidden');
+        }
+
+        // Confirm logout
+        function confirmLogout() {
+            document.getElementById('logout-confirm-modal').classList.add('hidden');
+            userSystem.logout();
+            showMessage('Successfully logged out! See you next time! 👋', 'logout');
+            
+            setTimeout(() => {
+                showLoggedOutState();
+            }, 1500);
+        }
+
+        // Show logged out state
+        function showLoggedOutState() {
+            document.getElementById('user-dashboard').style.display = 'none';
+            document.getElementById('logged-out-state').style.display = 'block';
+        }
+
+        // Game actions
+        function startGame() {
+            showMessage('Launching LeMemory Game... Get ready to match those LeBron cards!');
+            
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+
+        function viewStats() {
+            const bestScores = userSystem.getBestScores();
+            const difficulties = [
+                { label: 'LeEasy (12 cards)', key: 'diff-12' },
+                { label: 'LeMedium (16 cards)', key: 'diff-8' },
+                { label: 'LeHard (20 cards)', key: 'diff-4' },
+                { label: 'LeExtreme (24 cards)', key: 'diff-0' }
+            ];
+            
+            let statsMessage = 'Your Best Records:\n\n';
+            difficulties.forEach(diff => {
+                const score = bestScores[diff.key] ? `${bestScores[diff.key]} flips` : 'Not played yet';
+                statsMessage += `${diff.label}: ${score}\n`;
+            });
+            
+            alert(statsMessage);
+        }
+
+        function backToLogin() {
+            showMessage('Redirecting to login page...');
+            
+            setTimeout(() => {
+                window.location.href = '../login.html';
+            }, 1500);
+        }
+
+        // Modal click outside to close
+        document.getElementById('logout-confirm-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('logout-confirm-modal')) {
+                cancelLogout();
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            loadUserData();
+        });
+
+        // Add interactive animations
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.02)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('logout-confirm-modal');
+                if (!modal.classList.contains('hidden')) {
+                    cancelLogout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
