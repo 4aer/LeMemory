@@ -30,3 +30,9 @@ A fun and interactive memory card game featuring LeBron James-themed cards, buil
 3. Match pairs of LeBron cards before time runs out
 4. Try to complete the game with minimum flips
 5. Beat your best scores!
+
+## Installation
+
+1. Clone the repository
+2. Open `login.html` in a modern web browser
+3. Register an account to start playing
