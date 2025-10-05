@@ -21,7 +21,6 @@ A fun and interactive memory card game featuring LeBron James-themed cards, buil
   - Score tracking
   - Sound effects and background music
   - Volume controls
-  - Responsive design
 
 ## How to Play
 
