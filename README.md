@@ -20,7 +20,7 @@ A fun and interactive memory card game featuring LeBron James-themed cards, buil
   - Timer-based gameplay
   - Score tracking
   - Sound effects and background music
-  - Volume controls
+  - Volume controls 
 
 ## How to Play
 
