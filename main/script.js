@@ -54,8 +54,20 @@ class GameState {
     this.timer = setInterval(() => {
       this.timeRemaining--;
       this.updateUI();
+
+      // Timer warning at 10 seconds
+      const timeInfo = document.getElementById('time-info');
+      if (this.timeRemaining <= 10 && this.timeRemaining > 0) {
+        timeInfo?.classList.add('timer-warning');
+        if (this.timeRemaining === 10) {
+          gameController.audioController.play('timerWarn');
+        }
+      } else {
+        timeInfo?.classList.remove('timer-warning');
+      }
       
       if (this.timeRemaining <= 0) {
+        timeInfo?.classList.remove('timer-warning');
         gameController.endGame(false);
       }
     }, 1000);
@@ -76,6 +88,13 @@ class GameState {
     if (flipsElement) flipsElement.textContent = this.flips;
   }
 
+  updateProgress() {
+    const bar = document.getElementById('progress-bar');
+    if (!bar || !this.cards.length) return;
+    const pct = (this.matchedCards.length / this.cards.length) * 100;
+    bar.style.width = `${pct}%`;
+  }
+
   incrementFlips() {
     this.flips++;
     this.updateUI();
@@ -83,6 +102,7 @@ class GameState {
 
   addMatchedCards(card1, card2) {
     this.matchedCards.push(card1, card2);
+    this.updateProgress();
   }
 
   isGameComplete() {
@@ -98,7 +118,8 @@ class AudioController {
       flip: document.getElementById('flip-sound'),
       match: document.getElementById('match-sound'),
       victory: document.getElementById('victory-sound'),
-      gameOver: document.getElementById('game-over-sound')
+      gameOver: document.getElementById('game-over-sound'),
+      timerWarn: document.getElementById('flip-sound') // reuse flip as urgent tick
     };
     this.volume = 1;
     this.slider = document.getElementById('volume-slider');
@@ -184,6 +205,16 @@ class BestScoreManager {
     } catch (error) {
       console.warn('Could not save best score:', error);
       return false;
+    }
+  }
+
+  updateStartHint() {
+    const scores = this.getScores();
+    const key = `diff-${gameState.difficulty}`;
+    const best = scores[key];
+    const hint = document.getElementById('start-best-hint');
+    if (hint) {
+      hint.textContent = best ? `Your best on this difficulty: ${best} flips` : '';
     }
   }
 
@@ -340,11 +371,25 @@ class GameController {
     gameState.matchedCards = [];
     gameState.cardToCheck = null;
     
+    // Reset progress bar
+    const bar = document.getElementById('progress-bar');
+    if (bar) bar.style.width = '0%';
+
+    // Remove any lingering timer warning
+    document.getElementById('time-info')?.classList.remove('timer-warning');
+    
     gameState.updateUI();
     this.cardManager.createCards();
+    this.updateDifficultyBadge();
     gameState.startTimer();
     await this.audioController.play('bgm');
     this.bestScoreManager.display();
+  }
+
+  updateDifficultyBadge() {
+    const labels = { 12: 'LeEasy', 8: 'LeMedium', 4: 'LeHard', 0: 'LeExtreme' };
+    const badge = document.getElementById('difficulty-badge');
+    if (badge) badge.textContent = labels[gameState.difficulty] || 'LeEasy';
   }
 
   flipCard(card) {
@@ -407,16 +452,29 @@ class GameController {
   async endGame(victory) {
     gameState.isPlaying = false;
     gameState.stopTimer();
+    document.getElementById('time-info')?.classList.remove('timer-warning');
     this.audioController.stop('bgm');
     
     if (victory) {
       const isNewRecord = this.bestScoreManager.setScore(gameState.difficulty, gameState.flips);
+
+      // Populate game summary
+      const diffLabels = { 12: 'LeEasy', 8: 'LeMedium', 4: 'LeHard', 0: 'LeExtreme' };
+      const sumFlips = document.getElementById('summary-flips');
+      const sumTime  = document.getElementById('summary-time');
+      const sumDiff  = document.getElementById('summary-difficulty');
+      if (sumFlips) sumFlips.textContent = gameState.flips;
+      if (sumTime)  sumTime.textContent  = `${gameState.timeRemaining}s`;
+      if (sumDiff)  sumDiff.textContent  = diffLabels[gameState.difficulty] || '--';
+
       this.uiManager.showOverlay('victory-overlay');
       
       if (isNewRecord) {
         this.uiManager.showNewRecord();
       }
-      
+
+      // Confetti!
+      this.launchConfetti();
       await this.audioController.play('victory');
     } else {
       this.uiManager.showOverlay('game-over-overlay');
@@ -424,6 +482,18 @@ class GameController {
     }
     
     this.bestScoreManager.display();
+  }
+
+  launchConfetti() {
+    if (typeof confetti === 'undefined') return;
+    const canvas = document.getElementById('confetti-canvas');
+    const myConfetti = confetti.create(canvas, { resize: true, useWorker: true });
+    const gold = '#FDBB30', navy = '#041E42', white = '#ffffff';
+
+    myConfetti({ particleCount: 80, spread: 70, origin: { y: 0.6 }, colors: [gold, navy, white] });
+    setTimeout(() => myConfetti({ particleCount: 60, spread: 100, origin: { y: 0.5 }, colors: [gold, white] }), 400);
+    setTimeout(() => myConfetti({ particleCount: 40, angle: 60,  spread: 55, origin: { x: 0, y: 0.6 }, colors: [gold, navy] }), 700);
+    setTimeout(() => myConfetti({ particleCount: 40, angle: 120, spread: 55, origin: { x: 1, y: 0.6 }, colors: [gold, navy] }), 700);
   }
 
   setDifficulty(difficulty, timeLimit) {
@@ -441,6 +511,8 @@ class GameController {
     this.cardManager.createCards();
     this.cardManager.resetCards();
     this.bestScoreManager.display();
+    this.bestScoreManager.updateStartHint();
+    this.updateDifficultyBadge();
     gameState.updateUI();
   }
 
@@ -462,6 +534,8 @@ class GameController {
     this.loadSettings();
     this.cardManager.createCards();
     this.bestScoreManager.display();
+    this.bestScoreManager.updateStartHint();
+    this.updateDifficultyBadge();
     this.uiManager.init();
   }
 }
@@ -471,8 +545,15 @@ class UIManager {
   showOverlay(overlayId) {
     document.querySelectorAll('.overlay').forEach(overlay => {
       overlay.classList.add('hidden');
+      overlay.classList.remove('fading-in');
     });
-    document.getElementById(overlayId)?.classList.remove('hidden');
+    const el = document.getElementById(overlayId);
+    if (el) {
+      el.classList.remove('hidden');
+      // Trigger reflow then animate
+      void el.offsetWidth;
+      el.classList.add('fading-in');
+    }
   }
 
   hideOverlay(overlayId) {
@@ -505,6 +586,11 @@ class UIManager {
       this.showSettings();
     });
 
+    // Difficulty badge also opens settings
+    document.getElementById('difficulty-badge')?.addEventListener('click', () => {
+      this.showSettings();
+    });
+
     // Settings modal click outside to close
     document.getElementById('settings-modal')?.addEventListener('click', (e) => {
       if (e.target.classList.contains('settings-modal')) {
@@ -532,9 +618,25 @@ class UIManager {
       });
     });
 
-    // Overlay clicks
+    // Dedicated New Game / Start buttons
+    const startAction = (e) => {
+      e.stopPropagation();
+      this.hideOverlay('start-overlay');
+      this.hideOverlay('victory-overlay');
+      this.hideOverlay('game-over-overlay');
+      this.hideNewRecord();
+      gameController.startGame();
+    };
+
+    document.getElementById('start-btn')?.addEventListener('click', startAction);
+    document.getElementById('victory-btn')?.addEventListener('click', startAction);
+    document.getElementById('game-over-btn')?.addEventListener('click', startAction);
+
+    // Click-anywhere fallback on overlays (for returning players)
     document.querySelectorAll('.overlay').forEach(overlay => {
-      overlay.addEventListener('click', () => {
+      overlay.addEventListener('click', (e) => {
+        // Don't trigger if they clicked the button (button handles it)
+        if (e.target.classList.contains('new-game-btn')) return;
         this.hideOverlay(overlay.id);
         this.hideNewRecord();
         gameController.startGame();
