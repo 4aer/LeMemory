@@ -1,0 +1,23 @@
+# VS Code
+.vscode/launch.json
+.vscode/settings.json
+.vscode/*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# Node modules (if using npm)
+node_modules/
+package-lock.json
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
