@@ -500,6 +500,8 @@ class GameController {
     gameState.difficulty = difficulty;
     gameState.timeLimit = timeLimit;
     gameState.timeRemaining = timeLimit;
+    gameState.flips = 0;
+    gameState.matchedCards = [];
     
     try {
       localStorage.setItem(CONFIG.STORAGE_KEYS.DIFFICULTY, difficulty);

@@ -30,7 +30,11 @@ body {
   right: 20px;
   z-index: 1000;
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
 }
 
 .control-btn {
@@ -484,19 +488,16 @@ audio {
 
 /* Difficulty badge during gameplay */
 .difficulty-badge {
-  position: fixed;
-  top: 80px;
-  right: 20px;
   background: rgba(0,0,0,0.65);
   color: #FDBB30;
-  font-size: 1.1em;
-  padding: 6px 14px;
+  font-size: 1em;
+  padding: 6px 12px;
   border-radius: 8px;
   border: 1px solid rgba(253,187,48,0.3);
-  z-index: 999;
   cursor: pointer;
   transition: background 0.2s;
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 .difficulty-badge:hover {
@@ -613,7 +614,7 @@ audio {
   }
 
   .difficulty-badge {
-    top: 76px;
-    font-size: 0.9em;
+    font-size: 0.85em;
+    padding: 5px 10px;
   }
 }
