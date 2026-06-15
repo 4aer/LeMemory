@@ -275,38 +275,19 @@ class CardManager {
     // Clear existing cards
     this.container.querySelectorAll('.card').forEach(card => card.remove());
 
-    let numCards, gridColumns, gridRows;
+    let numCards, gridColumns;
     switch (gameState.difficulty) {
-      case 12: // LeEasy: 4x3
-        numCards = 12;
-        gridColumns = 4;
-        gridRows = 3;
-        break;
-      case 8: // LeMedium: 4x4
-        numCards = 16;
-        gridColumns = 4;
-        gridRows = 4;
-        break;
-      case 4: // LeHard: 5x4
-        numCards = 20;
-        gridColumns = 5;
-        gridRows = 4;
-        break;
-      case 0: // LeExtreme: 6x4
-        numCards = 24;
-        gridColumns = 6;
-        gridRows = 4;
-        break;
-      default:
-        numCards = 12;
-        gridColumns = 4;
-        gridRows = 3;
+      case 12: numCards = 12; gridColumns = 4; break; // LeEasy:    4x3
+      case 8:  numCards = 16; gridColumns = 4; break; // LeMedium:  4x4
+      case 4:  numCards = 20; gridColumns = 5; break; // LeHard:    5x4
+      case 0:  numCards = 24; gridColumns = 6; break; // LeExtreme: 6x4
+      default: numCards = 12; gridColumns = 4;
     }
 
-    // Set grid style for container
-    this.container.style.display = 'grid';
+    // Expose column count as a CSS variable so card sizing is fully CSS-driven
+    this.container.style.setProperty('--cols', gridColumns);
     this.container.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
-    this.container.style.gridTemplateRows = `repeat(${gridRows}, 1fr)`;
+    this.container.style.gridTemplateRows = '';
 
     const cardImages = CONFIG.CARD_IMAGES.slice(0, numCards);
     this.shuffleArray(cardImages);
