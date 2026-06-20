@@ -1,5 +1,7 @@
 # LeMemory - LeBron James Memory Game 🏀
 
+**PLAY IT HERE: https://le-memory-game.vercel.app/**
+
 A fun and interactive memory card game featuring LeBron James-themed cards, built with HTML, CSS, and JavaScript.
 
 ## Features
