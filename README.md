@@ -4,25 +4,32 @@
 
 A fun and interactive memory card game featuring LeBron James-themed cards, built with HTML, CSS, and JavaScript.
 
+## Development Status
+
+LeMemory is currently **under active development**. While the core gameplay is functional, some features may be incomplete and you may encounter bugs, visual issues, or unexpected behavior. Feedback and bug reports are always appreciated as the project continues to improve.
+
 ## Features
 
-- **Multiple Difficulty Levels**:
-  - LeEasy (12 cards)
-  - LeMedium (16 cards) 
-  - LeHard (20 cards)
-  - LeExtreme (24 cards)
+* **Multiple Difficulty Levels**:
 
-- **User System**:
-  - User registration and login
-  - Score tracking per difficulty level
-  - Best scores leaderboard
+  * LeEasy (12 cards)
+  * LeMedium (16 cards)
+  * LeHard (20 cards)
+  * LeExtreme (24 cards)
 
-- **Game Features**:
-  - Card matching mechanics
-  - Timer-based gameplay
-  - Score tracking
-  - Sound effects and background music
-  - Volume controls 
+* **User System**:
+
+  * User registration and login
+  * Score tracking per difficulty level
+  * Best scores leaderboard
+
+* **Game Features**:
+
+  * Card matching mechanics
+  * Timer-based gameplay
+  * Score tracking
+  * Sound effects and background music
+  * Volume controls
 
 ## How to Play
 
