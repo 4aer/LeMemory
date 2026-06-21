@@ -19,7 +19,6 @@ LeMemory is currently **under active development**. While the core gameplay is f
 
 * **User System**:
 
-  * User registration and login
   * Score tracking per difficulty level
   * Best scores leaderboard
 
@@ -33,11 +32,10 @@ LeMemory is currently **under active development**. While the core gameplay is f
 
 ## How to Play
 
-1. Register/Login to start playing
-2. Choose your difficulty level
-3. Match pairs of LeBron cards before time runs out
-4. Try to complete the game with minimum flips
-5. Beat your best scores!
+1. Choose your difficulty level
+2. Match pairs of LeBron cards before time runs out
+3. Try to complete the game with minimum flips
+4. Beat your best scores!
 
 ## Installation
 
