@@ -13,7 +13,7 @@
     }
     body { font-family: NBACavaliers, serif; }
 
-    /* ── Card CSS custom properties (set / overridden by JS) ── */
+    /* ── Card CSS custom properties ── */
     .card-container {
       --cols: 4;
       --gap: clamp(4px, 1.2vw, 10px);
@@ -21,7 +21,7 @@
         calc((min(96vw, 680px) - (var(--cols) - 1) * var(--gap)) / var(--cols)),
         125px
       );
-      --card-h: calc(var(--card-w) * 7 / 5); /* 5:7 ratio */
+      --card-h: calc(var(--card-w) * 7 / 5);
       display: grid;
       grid-template-columns: repeat(var(--cols), var(--card-w));
       gap: var(--gap);
@@ -31,7 +31,6 @@
       perspective: 500px;
     }
 
-    /* Card: explicit width + height so absolutely-positioned faces fill it */
     .card {
       position: relative;
       width: var(--card-w);
@@ -41,23 +40,19 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
     }
 
-    /* ── 3D flip — needs backface-visibility, not a Tailwind utility ── */
+    /* ── 3D flip ── */
     .card-face {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      width: 100%; height: 100%;
+      display: flex; justify-content: center; align-items: center;
       overflow: hidden;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      border-radius: 12px;
-      border: 2px solid;
+      border-radius: 12px; border: 2px solid;
       transition: transform 350ms ease-in-out;
     }
-    .card-back  { background-color: black; border-color: #FDBB30; transform: rotateY(0deg); }
-    .card-front { background-color: #041E42; border-color: #333;   transform: rotateY(180deg); }
+    .card-back  { background-color: black;   border-color: #FDBB30; transform: rotateY(0deg); }
+    .card-front { background-color: #041E42; border-color: #333;    transform: rotateY(180deg); }
     .card.visible .card-back  { transform: rotateY(-180deg); }
     .card.visible .card-front { transform: rotateY(0deg); }
 
@@ -67,13 +62,11 @@
       transition: transform 100ms ease-in-out;
     }
 
-    /* Card hover lift — :hover:not(.matched) not expressible as Tailwind utility */
     .card:hover:not(.matched) {
       transform: translateY(-6px) scale(1.04);
       filter: drop-shadow(0 12px 20px rgba(0,0,0,0.5));
     }
 
-    /* Matched card glow + bounce */
     .card.matched { filter: drop-shadow(0 0 10px rgba(253,187,48,0.6)); }
     .card.matched .card-value { animation: celebrate 0.6s cubic-bezier(0.36,0.07,0.19,0.97); }
     @keyframes celebrate {
@@ -96,7 +89,7 @@
       to   { text-shadow: 0 0 30px #FFD700, 0 0 40px #FFD700; }
     }
 
-    /* Timer warning pulse — JS adds .timer-warning to #time-info */
+    /* Timer warning */
     .timer-warning {
       animation: timerPulse 0.6s ease-in-out infinite !important;
       color: #FF4444 !important;
@@ -106,64 +99,180 @@
       50%       { transform: scale(1.08); opacity: 0.8; }
     }
 
-    /* Difficulty hover child selectors — can't express with CDN Tailwind */
-    .difficulty-item:hover .difficulty-image  { filter: blur(3px); }
-    .difficulty-item:hover .difficulty-overlay { opacity: 1; }
+    /* Difficulty hover — desktop only */
+    @media (hover: hover) {
+      .difficulty-item:hover .difficulty-image  { filter: blur(3px); }
+      .difficulty-item:hover .difficulty-overlay { opacity: 1; }
+    }
+    /* Touch devices: always show overlay text */
+    @media (hover: none) {
+      .difficulty-overlay { opacity: 1 !important; background: rgba(0,0,0,0.45) !important; }
+      .difficulty-image   { filter: none !important; }
+    }
 
-    /* Progress bar gradient */
+    /* Progress bar */
     .progress-bar-fill {
       background: linear-gradient(90deg, #FDBB30, #FFD060);
       transition: width 0.4s ease;
     }
 
-    /* Volume slider vertical */
-    #volume-slider {
-      appearance: slider-vertical;
-      -webkit-appearance: slider-vertical;
-      accent-color: #FDBB30;
+    /* ── Gear dropdown ── */
+    .gear-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 260px;
+      background: rgba(10,10,10,0.96);
+      border: 1px solid rgba(253,187,48,0.25);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 1100;
+      transform-origin: top right;
+      transition: opacity 0.18s ease, transform 0.18s ease;
     }
-
-    /* ── Best Score Modal — styled (JS injects HTML with these class names) ── */
-    .best-score-list-title {
-      font-size: 1.4em;
-      font-weight: bold;
-      text-align: center;
-      color: #FDBB30;
+    .gear-dropdown.hidden {
+      display: none;
+    }
+    .dropdown-section-label {
+      font-size: 0.65em;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 16px;
-      padding-bottom: 10px;
+      color: rgba(253,187,48,0.55);
+      margin-bottom: 2px;
+    }
+
+    /* Difficulty pills inside dropdown */
+    .diff-pill {
+      flex: 1;
+      padding: 5px 0;
+      border: 1px solid rgba(253,187,48,0.3);
+      border-radius: 6px;
+      background: rgba(253,187,48,0.07);
+      color: #FDBB30;
+      font-family: NBACavaliers, serif;
+      font-size: 0.7em;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      text-align: center;
+    }
+    .diff-pill:hover  { background: rgba(253,187,48,0.18); border-color: #FDBB30; }
+    .diff-pill:active { transform: scale(0.95); }
+    .diff-pill.active {
+      background: #FDBB30;
+      color: #041E42;
+      border-color: #FDBB30;
+      font-weight: bold;
+    }
+
+    /* Volume row inside dropdown */
+    .volume-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .volume-icon-btn {
+      flex-shrink: 0;
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      border: 1px solid rgba(253,187,48,0.3);
+      background: rgba(253,187,48,0.07);
+      color: #FDBB30;
+      font-size: 1.1em;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .volume-icon-btn:hover  { background: rgba(253,187,48,0.18); }
+    .volume-icon-btn:active { transform: scale(0.92); }
+    .volume-icon-btn.muted  { color: #888; border-color: rgba(255,255,255,0.15); }
+
+    /* Horizontal volume slider — works everywhere */
+    #volume-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 5px;
+      border-radius: 99px;
+      background: rgba(253,187,48,0.2);
+      outline: none;
+      cursor: pointer;
+    }
+    #volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #FDBB30;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    #volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    #volume-slider::-moz-range-thumb {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #FDBB30;
+      border: none;
+      cursor: pointer;
+    }
+    #volume-slider::-webkit-slider-runnable-track { border-radius: 99px; }
+    #volume-slider::-moz-range-track {
+      height: 5px; border-radius: 99px;
+      background: rgba(253,187,48,0.2);
+    }
+
+    /* Start overlay difficulty pills */
+    .start-diff-pill {
+      padding: 8px 16px;
+      border: 1.5px solid rgba(253,187,48,0.4);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.4);
+      color: #FDBB30;
+      font-family: NBACavaliers, serif;
+      font-size: 0.22em;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .start-diff-pill:hover  { background: rgba(253,187,48,0.15); border-color: #FDBB30; }
+    .start-diff-pill:active { transform: scale(0.95); }
+    .start-diff-pill.active {
+      background: #FDBB30;
+      color: #041E42;
+      border-color: #FDBB30;
+      font-weight: bold;
+    }
+
+    /* Best score modal */
+    .best-score-list-title {
+      font-size: 1.4em; font-weight: bold; text-align: center;
+      color: #FDBB30; letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 16px; padding-bottom: 10px;
       border-bottom: 1px solid rgba(253,187,48,0.3);
     }
-    .best-score-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 16px 0;
-      width: 100%;
-    }
+    .best-score-list { list-style: none; padding: 0; margin: 0 0 16px 0; width: 100%; }
     .best-score-list li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      margin-bottom: 6px;
-      border-radius: 8px;
-      font-size: 1.05em;
-      background: rgba(253,187,48,0.07);
-      border: 1px solid rgba(253,187,48,0.15);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px; margin-bottom: 6px; border-radius: 8px; font-size: 1.05em;
+      background: rgba(253,187,48,0.07); border: 1px solid rgba(253,187,48,0.15);
       transition: background 0.2s;
     }
     .best-score-list li:hover { background: rgba(253,187,48,0.14); }
-    .best-score-list li span { color: #FDBB30; font-weight: bold; }
+    .best-score-list li span  { color: #FDBB30; font-weight: bold; }
 
-    /* Mobile — swap bg, stack HUD */
+    /* Mobile */
     @media (max-width: 600px) {
       body { background-image: url("Assets/Images/LeBackgroundPortrait.png") !important; }
       .game-info-container { flex-direction: column; gap: 2px; align-items: center; }
       .difficulty-grid { grid-template-columns: 1fr 1fr !important; }
+      .gear-dropdown { width: 230px; }
     }
     @media (max-width: 380px) {
       .difficulty-grid { grid-template-columns: 1fr !important; }
+      .gear-dropdown { width: 200px; right: -10px; }
     }
   </style>
 </head>
@@ -172,47 +281,55 @@
              bg-cover bg-center bg-no-repeat
              [background-image:url('Assets/Images/LeBackground.png')]">
 
-  <!-- ── Header Controls ── -->
-  <div class="fixed top-5 right-5 z-[1000] flex gap-3 items-center
-              px-3 py-2 rounded-xl bg-black/30
-              max-w-[calc(100vw-160px)]">
+  <!-- ── Header: Best Score (left) + Gear (right) ── -->
 
-    <!-- Difficulty Badge -->
-    <div id="difficulty-badge" title="Click to change difficulty"
-         class="bg-black/65 text-[#FDBB30] text-[1em] px-3 py-1.5 rounded-lg
-                border border-[rgba(253,187,48,0.3)] cursor-pointer whitespace-nowrap
-                tracking-wide transition-colors duration-200 hover:bg-black/85">
-      LeEasy
-    </div>
-
-    <!-- Settings Button -->
-    <button id="settings-btn" title="Settings"
-            class="w-[50px] h-[50px] border-0 rounded-lg cursor-pointer bg-transparent
-                   bg-cover transition-transform duration-200 hover:scale-110 active:scale-95
-                   [background-image:url('Assets/Images/SettingsButton.png')]">
-    </button>
-
-    <!-- Sound Control -->
-    <div class="sound-control relative flex flex-col items-center">
-      <button id="sound-btn" title="Toggle Sound"
-              class="w-[50px] h-[50px] border-0 rounded-lg cursor-pointer bg-transparent
-                     bg-cover transition-transform duration-200 hover:scale-110 active:scale-95
-                     [background-image:url('Assets/Images/SoundOn.png')]">
-      </button>
-      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1"
-             class="hidden absolute top-[60px] left-1/2 -translate-x-[60%]
-                    w-5 h-[120px] z-[1001] bg-[#333] rounded-lg">
-    </div>
-  </div>
-
-  <!-- ── Best Score ── -->
   <div id="best-score" title="Click to view all best records"
        class="fixed top-5 left-5 z-[1000] cursor-pointer text-[#FDBB30] text-[2em]
-              bg-black/70 px-5 py-2.5 rounded-[10px]">
+              bg-black/70 px-5 py-2.5 rounded-[10px] select-none">
     Best: --
   </div>
 
-  <!-- ── Best Score Modal (content injected by JS) ── -->
+  <!-- Gear button + dropdown (self-contained) -->
+  <div class="fixed top-5 right-5 z-[1100]" id="gear-container">
+
+    <button id="gear-btn" title="Settings"
+            class="w-[50px] h-[50px] border-0 rounded-xl cursor-pointer bg-transparent
+                   bg-cover bg-center transition-transform duration-200
+                   hover:scale-110 active:scale-95
+                   [background-image:url('Assets/Images/SettingsButton.png')]">
+    </button>
+
+    <!-- Dropdown panel -->
+    <div id="gear-dropdown" class="gear-dropdown hidden">
+
+      <!-- Difficulty section -->
+      <div>
+        <div class="dropdown-section-label">Difficulty</div>
+        <div class="flex gap-1.5 mt-1">
+          <button class="diff-pill" data-difficulty="12" data-time="120">Easy</button>
+          <button class="diff-pill" data-difficulty="8"  data-time="90">Med</button>
+          <button class="diff-pill" data-difficulty="4"  data-time="60">Hard</button>
+          <button class="diff-pill" data-difficulty="0"  data-time="45">Max</button>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="h-px bg-[rgba(253,187,48,0.15)]"></div>
+
+      <!-- Volume section -->
+      <div>
+        <div class="dropdown-section-label">Volume</div>
+        <div class="volume-row mt-1">
+          <button id="volume-icon-btn" class="volume-icon-btn" title="Mute / Unmute">🔊</button>
+          <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+          <span id="volume-pct" class="text-[#FDBB30] text-[0.7em] w-8 text-right select-none">100%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Best Score Modal (content injected by JS) -->
   <div id="best-score-modal"
        class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
               bg-[#1a1a1a] text-[#FDBB30] rounded-2xl z-[2000] w-[320px]
@@ -231,29 +348,25 @@
 
   <!-- ── Audio ── -->
   <audio id="bgm" loop class="hidden"><source src="Assets/Audio/LeR&B Song.mp3" type="audio/mp3"></audio>
-  <audio id="flip-sound" class="hidden"><source src="Assets/Audio/flip.wav" type="audio/wav"></audio>
-  <audio id="match-sound" class="hidden"><source src="Assets/Audio/match.wav" type="audio/wav"></audio>
-  <audio id="victory-sound" class="hidden"><source src="Assets/Audio/comeonman.mp3" type="audio/mp3"></audio>
-  <audio id="game-over-sound" class="hidden"><source src="Assets/Audio/heartbloodsweat.wav" type="audio/wav"></audio>
+  <audio id="flip-sound"     class="hidden"><source src="Assets/Audio/flip.wav"             type="audio/wav"></audio>
+  <audio id="match-sound"    class="hidden"><source src="Assets/Audio/match.wav"            type="audio/wav"></audio>
+  <audio id="victory-sound"  class="hidden"><source src="Assets/Audio/comeonman.mp3"        type="audio/mp3"></audio>
+  <audio id="game-over-sound"class="hidden"><source src="Assets/Audio/heartbloodsweat.wav"  type="audio/wav"></audio>
 
-  <!-- ── Settings Modal ── -->
-  <!-- IMPORTANT: keep class "settings-modal" so JS click-outside check works -->
+  <!-- ── Settings Modal (full-screen difficulty picker) ── -->
   <div id="settings-modal"
        class="settings-modal hidden fixed inset-0 bg-black/80 flex justify-center items-center z-[2000]">
-
     <div class="relative flex flex-col justify-center items-center text-white text-center
                 rounded-[25px] p-10 bg-cover bg-center
                 w-[min(1200px,90vw)] h-[min(800px,80vh)]
                 [background-image:url('Assets/Images/SettingsBG.png')]
                 max-sm:w-[95vw] max-sm:h-[85vh] max-sm:p-5">
 
-      <!-- X close button -->
       <button id="close-settings-btn"
               class="absolute top-4 right-4 w-10 h-10 rounded-full
-                     bg-black/50 border border-white/20 text-white
-                     text-xl cursor-pointer flex items-center justify-center
-                     transition-all duration-200 hover:bg-black/80 hover:scale-110
-                     active:scale-95 z-10">
+                     bg-black/50 border border-white/20 text-white text-xl cursor-pointer
+                     flex items-center justify-center z-10
+                     transition-all duration-200 hover:bg-black/80 hover:scale-110 active:scale-95">
         ✕
       </button>
 
@@ -371,7 +484,7 @@
     <div id="progress-bar" class="progress-bar-fill h-full rounded-full w-0"></div>
   </div>
 
-  <!-- ── Card Grid (JS-generated) ── -->
+  <!-- ── Card Grid ── -->
   <div class="card-container"></div>
 
   <!-- ── Start Overlay ── -->
@@ -380,10 +493,25 @@
               text-[#FDBB30] text-center bg-black/90 cursor-pointer
               text-[clamp(3em,8vw,8em)] transition-opacity duration-300">
     LeMemory
-    <div class="text-[0.3em] mt-5 opacity-80">Match all the LeBron cards!</div>
-    <div id="start-best-hint" class="text-[0.25em] mt-2 text-[#FDBB30] opacity-70"></div>
+
+    <!-- Current difficulty label -->
+    <div class="text-[0.28em] mt-4 opacity-90 tracking-widest uppercase">
+      Playing on: <span id="overlay-difficulty-label" class="text-[#FDBB30] font-bold">LeEasy</span>
+    </div>
+
+    <!-- Difficulty pill selector -->
+    <div class="flex gap-2 mt-3 flex-wrap justify-center pointer-events-auto" id="start-diff-pills">
+      <button class="start-diff-pill active" data-difficulty="12" data-time="120">LeEasy</button>
+      <button class="start-diff-pill"        data-difficulty="8"  data-time="90">LeMedium</button>
+      <button class="start-diff-pill"        data-difficulty="4"  data-time="60">LeHard</button>
+      <button class="start-diff-pill"        data-difficulty="0"  data-time="45">LeExtreme</button>
+    </div>
+
+    <div class="text-[0.22em] mt-3 opacity-60">Match all the LeBron cards!</div>
+    <div id="start-best-hint" class="text-[0.2em] mt-1 text-[#FDBB30] opacity-60"></div>
+
     <button id="start-btn"
-            class="new-game-btn mt-8 px-9 py-3.5 bg-[#FDBB30] text-[#041E42] border-0
+            class="new-game-btn mt-6 px-9 py-3.5 bg-[#FDBB30] text-[#041E42] border-0
                    rounded-[10px] text-[0.25em] cursor-pointer tracking-[2px] pointer-events-auto
                    transition-[transform,background] duration-150 min-h-[44px]
                    hover:bg-[#FFD060] hover:scale-[1.06] active:scale-[0.97]
@@ -448,16 +576,5 @@
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
-
-  <!-- Wire up the X button and close-settings-btn in a small inline script
-       so it works even if UIManager hasn't finished init yet -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('close-settings-btn')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.getElementById('settings-modal')?.classList.add('hidden');
-      });
-    });
-  </script>
 </body>
 </html>
