@@ -43,16 +43,20 @@
     /* ── 3D flip ── */
     .card-face {
       position: absolute;
-      width: 100%; height: 100%;
-      display: flex; justify-content: center; align-items: center;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       overflow: hidden;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      border-radius: 12px; border: 2px solid;
+      border-radius: 12px;
+      border: 2px solid;
       transition: transform 350ms ease-in-out;
     }
-    .card-back  { background-color: black;   border-color: #FDBB30; transform: rotateY(0deg); }
-    .card-front { background-color: #041E42; border-color: #333;    transform: rotateY(180deg); }
+    .card-back  { background-color: black; border-color: #FDBB30; transform: rotateY(0deg); }
+    .card-front { background-color: #041E42; border-color: #333;   transform: rotateY(180deg); }
     .card.visible .card-back  { transform: rotateY(-180deg); }
     .card.visible .card-front { transform: rotateY(0deg); }
 
@@ -62,11 +66,13 @@
       transition: transform 100ms ease-in-out;
     }
 
+    /* Card hover lift — :hover:not(.matched) not expressible as Tailwind utility */
     .card:hover:not(.matched) {
       transform: translateY(-6px) scale(1.04);
       filter: drop-shadow(0 12px 20px rgba(0,0,0,0.5));
     }
 
+    /* Matched card glow + bounce */
     .card.matched { filter: drop-shadow(0 0 10px rgba(253,187,48,0.6)); }
     .card.matched .card-value { animation: celebrate 0.6s cubic-bezier(0.36,0.07,0.19,0.97); }
     @keyframes celebrate {
@@ -99,16 +105,9 @@
       50%       { transform: scale(1.08); opacity: 0.8; }
     }
 
-    /* Difficulty hover — desktop only */
-    @media (hover: hover) {
-      .difficulty-item:hover .difficulty-image  { filter: blur(3px); }
-      .difficulty-item:hover .difficulty-overlay { opacity: 1; }
-    }
-    /* Touch devices: always show overlay text */
-    @media (hover: none) {
-      .difficulty-overlay { opacity: 1 !important; background: rgba(0,0,0,0.45) !important; }
-      .difficulty-image   { filter: none !important; }
-    }
+    /* Difficulty hover child selectors — can't express with CDN Tailwind */
+    .difficulty-item:hover .difficulty-image  { filter: blur(3px); }
+    .difficulty-item:hover .difficulty-overlay { opacity: 1; }
 
     /* Progress bar */
     .progress-bar-fill {
@@ -121,77 +120,72 @@
       position: absolute;
       top: calc(100% + 10px);
       right: 0;
-      width: 260px;
+      width: 240px;
       background: rgba(10,10,10,0.96);
       border: 1px solid rgba(253,187,48,0.25);
       border-radius: 14px;
-      padding: 16px;
+      padding: 14px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.7);
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       z-index: 1100;
-      transform-origin: top right;
-      transition: opacity 0.18s ease, transform 0.18s ease;
     }
-    .gear-dropdown.hidden {
-      display: none;
-    }
-    .dropdown-section-label {
-      font-size: 0.65em;
+    .gear-dropdown.hidden { display: none; }
+
+    .dropdown-label {
+      font-size: 0.62em;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(253,187,48,0.55);
-      margin-bottom: 2px;
+      color: rgba(253,187,48,0.5);
+      margin-bottom: 4px;
     }
 
-    /* Difficulty pills inside dropdown */
-    .diff-pill {
-      flex: 1;
-      padding: 5px 0;
-      border: 1px solid rgba(253,187,48,0.3);
-      border-radius: 6px;
-      background: rgba(253,187,48,0.07);
+    /* Current difficulty button inside dropdown */
+    #dropdown-diff-btn {
+      width: 100%;
+      padding: 9px 12px;
+      background: rgba(253,187,48,0.09);
+      border: 1px solid rgba(253,187,48,0.35);
+      border-radius: 8px;
       color: #FDBB30;
       font-family: NBACavaliers, serif;
-      font-size: 0.7em;
-      letter-spacing: 1px;
+      font-size: 0.85em;
+      letter-spacing: 2px;
+      text-align: center;
       cursor: pointer;
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    .diff-pill:hover  { background: rgba(253,187,48,0.18); border-color: #FDBB30; }
-    .diff-pill:active { transform: scale(0.95); }
-    .diff-pill.active {
-      background: #FDBB30;
-      color: #041E42;
-      border-color: #FDBB30;
-      font-weight: bold;
-    }
+    #dropdown-diff-btn:hover  { background: rgba(253,187,48,0.18); border-color: #FDBB30; }
+    #dropdown-diff-btn:active { transform: scale(0.97); }
 
-    /* Volume row inside dropdown */
+    /* Volume row */
     .volume-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .volume-icon-btn {
       flex-shrink: 0;
-      width: 34px; height: 34px;
-      border-radius: 8px;
+      width: 32px; height: 32px;
+      border-radius: 7px;
       border: 1px solid rgba(253,187,48,0.3);
       background: rgba(253,187,48,0.07);
       color: #FDBB30;
-      font-size: 1.1em;
+      font-size: 1em;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: background 0.15s, transform 0.1s;
     }
     .volume-icon-btn:hover  { background: rgba(253,187,48,0.18); }
     .volume-icon-btn:active { transform: scale(0.92); }
-    .volume-icon-btn.muted  { color: #888; border-color: rgba(255,255,255,0.15); }
+    .volume-icon-btn.muted  { color: #666; border-color: rgba(255,255,255,0.12); }
 
-    /* Horizontal volume slider — works everywhere */
+    /* Horizontal volume slider */
     #volume-slider {
       flex: 1;
       -webkit-appearance: none;
@@ -204,29 +198,75 @@
     }
     #volume-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px; height: 16px;
+      width: 15px; height: 15px;
       border-radius: 50%;
       background: #FDBB30;
       cursor: pointer;
       transition: transform 0.1s;
     }
-    #volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    #volume-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
     #volume-slider::-moz-range-thumb {
-      width: 16px; height: 16px;
+      width: 15px; height: 15px;
       border-radius: 50%;
       background: #FDBB30;
       border: none;
       cursor: pointer;
     }
-    #volume-slider::-webkit-slider-runnable-track { border-radius: 99px; }
     #volume-slider::-moz-range-track {
       height: 5px; border-radius: 99px;
       background: rgba(253,187,48,0.2);
     }
 
+    @media (max-width: 400px) {
+      .gear-dropdown { width: 210px; right: -4px; }
+    }
+
+    /* ── Best Score Modal — styled (JS injects HTML with these class names) ── */
+    .best-score-list-title {
+      font-size: 1.4em;
+      font-weight: bold;
+      text-align: center;
+      color: #FDBB30;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(253,187,48,0.3);
+    }
+    .best-score-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px 0;
+      width: 100%;
+    }
+    .best-score-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      border-radius: 8px;
+      font-size: 1.05em;
+      background: rgba(253,187,48,0.07);
+      border: 1px solid rgba(253,187,48,0.15);
+      transition: background 0.2s;
+    }
+    .best-score-list li:hover { background: rgba(253,187,48,0.14); }
+    .best-score-list li span { color: #FDBB30; font-weight: bold; }
+
+    /* Mobile — swap bg, stack HUD */
+    @media (max-width: 600px) {
+      body { background-image: url("Assets/Images/LeBackgroundPortrait.png") !important; }
+      .game-info-container { flex-direction: column; gap: 2px; align-items: center; }
+      .difficulty-grid { grid-template-columns: 1fr 1fr !important; }
+    }
+    @media (max-width: 380px) {
+      .difficulty-grid { grid-template-columns: 1fr !important; }
+    }
+
     /* Start overlay difficulty pills */
     .start-diff-pill {
-      padding: 8px 16px;
+      padding: 7px 18px;
       border: 1.5px solid rgba(253,187,48,0.4);
       border-radius: 8px;
       background: rgba(0,0,0,0.4);
@@ -236,6 +276,7 @@
       letter-spacing: 1.5px;
       cursor: pointer;
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      pointer-events: auto;
     }
     .start-diff-pill:hover  { background: rgba(253,187,48,0.15); border-color: #FDBB30; }
     .start-diff-pill:active { transform: scale(0.95); }
@@ -245,35 +286,6 @@
       border-color: #FDBB30;
       font-weight: bold;
     }
-
-    /* Best score modal */
-    .best-score-list-title {
-      font-size: 1.4em; font-weight: bold; text-align: center;
-      color: #FDBB30; letter-spacing: 2px; text-transform: uppercase;
-      margin-bottom: 16px; padding-bottom: 10px;
-      border-bottom: 1px solid rgba(253,187,48,0.3);
-    }
-    .best-score-list { list-style: none; padding: 0; margin: 0 0 16px 0; width: 100%; }
-    .best-score-list li {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 12px; margin-bottom: 6px; border-radius: 8px; font-size: 1.05em;
-      background: rgba(253,187,48,0.07); border: 1px solid rgba(253,187,48,0.15);
-      transition: background 0.2s;
-    }
-    .best-score-list li:hover { background: rgba(253,187,48,0.14); }
-    .best-score-list li span  { color: #FDBB30; font-weight: bold; }
-
-    /* Mobile */
-    @media (max-width: 600px) {
-      body { background-image: url("Assets/Images/LeBackgroundPortrait.png") !important; }
-      .game-info-container { flex-direction: column; gap: 2px; align-items: center; }
-      .difficulty-grid { grid-template-columns: 1fr 1fr !important; }
-      .gear-dropdown { width: 230px; }
-    }
-    @media (max-width: 380px) {
-      .difficulty-grid { grid-template-columns: 1fr !important; }
-      .gear-dropdown { width: 200px; right: -10px; }
-    }
   </style>
 </head>
 
@@ -281,17 +293,10 @@
              bg-cover bg-center bg-no-repeat
              [background-image:url('Assets/Images/LeBackground.png')]">
 
-  <!-- ── Header: Best Score (left) + Gear (right) ── -->
-
-  <div id="best-score" title="Click to view all best records"
-       class="fixed top-5 left-5 z-[1000] cursor-pointer text-[#FDBB30] text-[2em]
-              bg-black/70 px-5 py-2.5 rounded-[10px] select-none">
-    Best: --
-  </div>
-
-  <!-- Gear button + dropdown (self-contained) -->
+  <!-- ── Header: Gear button + dropdown ── -->
   <div class="fixed top-5 right-5 z-[1100]" id="gear-container">
 
+    <!-- Gear button -->
     <button id="gear-btn" title="Settings"
             class="w-[50px] h-[50px] border-0 rounded-xl cursor-pointer bg-transparent
                    bg-cover bg-center transition-transform duration-200
@@ -304,32 +309,36 @@
 
       <!-- Difficulty section -->
       <div>
-        <div class="dropdown-section-label">Difficulty</div>
-        <div class="flex gap-1.5 mt-1">
-          <button class="diff-pill" data-difficulty="12" data-time="120">Easy</button>
-          <button class="diff-pill" data-difficulty="8"  data-time="90">Med</button>
-          <button class="diff-pill" data-difficulty="4"  data-time="60">Hard</button>
-          <button class="diff-pill" data-difficulty="0"  data-time="45">Max</button>
-        </div>
+        <div class="dropdown-label">Difficulty</div>
+        <button id="dropdown-diff-btn" title="Change difficulty">
+          <span id="dropdown-diff-label">LeEasy</span>
+        </button>
       </div>
 
       <!-- Divider -->
-      <div class="h-px bg-[rgba(253,187,48,0.15)]"></div>
+      <div style="height:1px;background:rgba(253,187,48,0.15)"></div>
 
       <!-- Volume section -->
       <div>
-        <div class="dropdown-section-label">Volume</div>
-        <div class="volume-row mt-1">
+        <div class="dropdown-label">Volume</div>
+        <div class="volume-row">
           <button id="volume-icon-btn" class="volume-icon-btn" title="Mute / Unmute">🔊</button>
           <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
-          <span id="volume-pct" class="text-[#FDBB30] text-[0.7em] w-8 text-right select-none">100%</span>
+          <span id="volume-pct" class="text-[#FDBB30] text-[0.68em] w-8 text-right select-none">100%</span>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Best Score Modal (content injected by JS) -->
+  <!-- ── Best Score ── -->
+  <div id="best-score" title="Click to view all best records"
+       class="fixed top-5 left-5 z-[1000] cursor-pointer text-[#FDBB30] text-[2em]
+              bg-black/70 px-5 py-2.5 rounded-[10px]">
+    Best: --
+  </div>
+
+  <!-- ── Best Score Modal (content injected by JS) ── -->
   <div id="best-score-modal"
        class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
               bg-[#1a1a1a] text-[#FDBB30] rounded-2xl z-[2000] w-[320px]
@@ -353,9 +362,11 @@
   <audio id="victory-sound"  class="hidden"><source src="Assets/Audio/comeonman.mp3"        type="audio/mp3"></audio>
   <audio id="game-over-sound"class="hidden"><source src="Assets/Audio/heartbloodsweat.wav"  type="audio/wav"></audio>
 
-  <!-- ── Settings Modal (full-screen difficulty picker) ── -->
+  <!-- ── Settings Modal ── -->
+  <!-- IMPORTANT: keep class "settings-modal" so JS click-outside check works -->
   <div id="settings-modal"
        class="settings-modal hidden fixed inset-0 bg-black/80 flex justify-center items-center z-[2000]">
+
     <div class="relative flex flex-col justify-center items-center text-white text-center
                 rounded-[25px] p-10 bg-cover bg-center
                 w-[min(1200px,90vw)] h-[min(800px,80vh)]
@@ -364,9 +375,10 @@
 
       <button id="close-settings-btn"
               class="absolute top-4 right-4 w-10 h-10 rounded-full
-                     bg-black/50 border border-white/20 text-white text-xl cursor-pointer
-                     flex items-center justify-center z-10
-                     transition-all duration-200 hover:bg-black/80 hover:scale-110 active:scale-95">
+                     bg-black/50 border border-white/20 text-white
+                     text-xl cursor-pointer flex items-center justify-center
+                     transition-all duration-200 hover:bg-black/80 hover:scale-110
+                     active:scale-95 z-10">
         ✕
       </button>
 
@@ -484,7 +496,7 @@
     <div id="progress-bar" class="progress-bar-fill h-full rounded-full w-0"></div>
   </div>
 
-  <!-- ── Card Grid ── -->
+  <!-- ── Card Grid (JS-generated) ── -->
   <div class="card-container"></div>
 
   <!-- ── Start Overlay ── -->
@@ -495,12 +507,12 @@
     LeMemory
 
     <!-- Current difficulty label -->
-    <div class="text-[0.28em] mt-4 opacity-90 tracking-widest uppercase">
+    <div class="text-[0.28em] mt-4 opacity-75 tracking-widest uppercase">
       Playing on: <span id="overlay-difficulty-label" class="text-[#FDBB30] font-bold">LeEasy</span>
     </div>
 
     <!-- Difficulty pill selector -->
-    <div class="flex gap-2 mt-3 flex-wrap justify-center pointer-events-auto" id="start-diff-pills">
+    <div class="flex gap-2 mt-3 flex-wrap justify-center" id="start-diff-pills">
       <button class="start-diff-pill active" data-difficulty="12" data-time="120">LeEasy</button>
       <button class="start-diff-pill"        data-difficulty="8"  data-time="90">LeMedium</button>
       <button class="start-diff-pill"        data-difficulty="4"  data-time="60">LeHard</button>
@@ -576,5 +588,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
+
+  <!-- Wire up the X button and close-settings-btn in a small inline script
+       so it works even if UIManager hasn't finished init yet -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('close-settings-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('settings-modal')?.classList.add('hidden');
+      });
+    });
+  </script>
 </body>
 </html>
