@@ -2,52 +2,51 @@
 const CONFIG = {
   CARD_IMAGES: [
     'ClevelandBron1.png', 'ClevelandBron1.png',
-    'HSbron.png', 'HSbron.png',
+    'HSbron.png',         'HSbron.png',
     'ClevelandBron2.png', 'ClevelandBron2.png',
-    'LakerBron.png', 'LakerBron.png',
-    'HeatBron.png', 'HeatBron.png',
-    'GilasBron.png', 'GilasBron.png',
-    'LebronQuiapo.png', 'LebronQuiapo.png',
-    'LebronJeep.png', 'LebronJeep.png',
-    'LeArner.png', 'LeArner.png',
-    'LeSunshine.png', 'LeSunshine.png',
-    'LeIGlive.png', 'LeIGlive.png',
-    'LePodcast.png', 'LePodcast.png',
-    'LeZapote.png', 'LeZapote.png',
-    'LeMaid.png', 'LeMaid.png',
-    'LeMeat.png', 'LeMeat.png',
-    'LeFreaky.png', 'LeFreaky.png',
+    'LakerBron.png',      'LakerBron.png',
+    'HeatBron.png',       'HeatBron.png',
+    'GilasBron.png',      'GilasBron.png',
+    'LebronQuiapo.png',   'LebronQuiapo.png',
+    'LebronJeep.png',     'LebronJeep.png',
+    'LeArner.png',        'LeArner.png',
+    'LeSunshine.png',     'LeSunshine.png',
+    'LeIGlive.png',       'LeIGlive.png',
+    'LePodcast.png',      'LePodcast.png',
+    'LeZapote.png',       'LeZapote.png',
+    'LeMaid.png',         'LeMaid.png',
+    'LeMeat.png',         'LeMeat.png',
+    'LeFreaky.png',       'LeFreaky.png',
   ],
   CARD_BACK_IMAGE: 'LBJ LOGO.png',
   STORAGE_KEYS: {
     BEST_SCORES: 'lebron-memory-best',
-    DIFFICULTY: 'lebron-difficulty',
-    TIME_LIMIT: 'lebron-time-limit'
+    DIFFICULTY:  'lebron-difficulty',
+    TIME_LIMIT:  'lebron-time-limit'
   },
   DELAYS: {
     CARD_FLIP_BACK: 750,
-    VICTORY_DELAY: 500
-  }
+    VICTORY_DELAY:  500
+  },
+  DIFF_LABELS: { 12: 'LeEasy', 8: 'LeMedium', 4: 'LeHard', 0: 'LeExtreme' }
 };
 
 // Game state
 class GameState {
-  constructor() {
-    this.reset();
-  }
+  constructor() { this.reset(); }
 
   reset() {
-    this.isPlaying = false;
-    this.isPaused = false;
-    this.difficulty = 12;
-    this.timeLimit = 100;
-    this.timeRemaining = 100;
-    this.flips = 0;
-    this.matchedCards = [];
-    this.cardToCheck = null;
-    this.timer = null;
-    this.cards = [];
-    this.isMuted = false;
+    this.isPlaying     = false;
+    this.isPaused      = false;
+    this.difficulty    = 12;
+    this.timeLimit     = 120;
+    this.timeRemaining = 120;
+    this.flips         = 0;
+    this.matchedCards  = [];
+    this.cardToCheck   = null;
+    this.timer         = null;
+    this.cards         = [];
+    this.isMuted       = false;
   }
 
   startTimer() {
@@ -59,13 +58,11 @@ class GameState {
       const timeInfo = document.getElementById('time-info');
       if (this.timeRemaining <= 10 && this.timeRemaining > 0) {
         timeInfo?.classList.add('timer-warning');
-        if (this.timeRemaining === 10) {
-          gameController.audioController.play('timerWarn');
-        }
+        if (this.timeRemaining === 10) gameController.audioController.play('timerWarn');
       } else {
         timeInfo?.classList.remove('timer-warning');
       }
-      
+
       if (this.timeRemaining <= 0) {
         timeInfo?.classList.remove('timer-warning');
         gameController.endGame(false);
@@ -74,241 +71,226 @@ class GameState {
   }
 
   stopTimer() {
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
   }
 
   updateUI() {
-    const timeElement = document.getElementById('time-remaining');
-    const flipsElement = document.getElementById('flip-count');
-    
-    if (timeElement) timeElement.textContent = this.timeRemaining;
-    if (flipsElement) flipsElement.textContent = this.flips;
+    const t = document.getElementById('time-remaining');
+    const f = document.getElementById('flip-count');
+    if (t) t.textContent = this.timeRemaining;
+    if (f) f.textContent = this.flips;
   }
 
   updateProgress() {
     const bar = document.getElementById('progress-bar');
     if (!bar || !this.cards.length) return;
-    const pct = (this.matchedCards.length / this.cards.length) * 100;
-    bar.style.width = `${pct}%`;
+    bar.style.width = `${(this.matchedCards.length / this.cards.length) * 100}%`;
   }
 
-  incrementFlips() {
-    this.flips++;
-    this.updateUI();
-  }
+  incrementFlips() { this.flips++; this.updateUI(); }
 
-  addMatchedCards(card1, card2) {
-    this.matchedCards.push(card1, card2);
-    this.updateProgress();
-  }
+  addMatchedCards(c1, c2) { this.matchedCards.push(c1, c2); this.updateProgress(); }
 
-  isGameComplete() {
-    return this.matchedCards.length === this.cards.length;
-  }
+  isGameComplete() { return this.matchedCards.length === this.cards.length; }
 }
 
-// Audio controller
+// ─────────────────────────── AudioController ───────────────────────────
 class AudioController {
   constructor() {
     this.sounds = {
-      bgm: document.getElementById('bgm'),
-      flip: document.getElementById('flip-sound'),
-      match: document.getElementById('match-sound'),
-      victory: document.getElementById('victory-sound'),
+      bgm:      document.getElementById('bgm'),
+      flip:     document.getElementById('flip-sound'),
+      match:    document.getElementById('match-sound'),
+      victory:  document.getElementById('victory-sound'),
       gameOver: document.getElementById('game-over-sound'),
-      timerWarn: document.getElementById('flip-sound') // reuse flip as urgent tick
+      timerWarn: document.getElementById('flip-sound')
     };
-    this.volume = 1;
-    this.slider = document.getElementById('volume-slider');
-    this.initVolumeControl();
+    this.volume  = 1;
+    this.isMuted = false;
+    this._initVolumeUI();
   }
 
-  initVolumeControl() {
-    // show/hide slider on mute button click
-    const muteBtn = document.getElementById('sound-btn');
-    muteBtn?.addEventListener('click', (e) => {
+  _initVolumeUI() {
+    const slider  = document.getElementById('volume-slider');
+    const iconBtn = document.getElementById('volume-icon-btn');
+    const pctEl   = document.getElementById('volume-pct');
+
+    if (!slider) return;
+
+    // Slider input → update volume
+    slider.addEventListener('input', () => {
+      const val = parseFloat(slider.value);
+      this.isMuted = val === 0;
+      this.volume  = val;
+      this._applyVolume();
+      this._updateIcon(iconBtn, pctEl, slider);
+    });
+
+    // Speaker icon → cycle: full → half → mute → full
+    iconBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
-      this.slider.classList.toggle('hidden');
-    });
-
-    // hide slider if clicking outside
-    document.addEventListener('click', (e) => {
-      if (!this.slider.classList.contains('hidden') && !e.target.closest('.sound-control')) {
-        this.slider.classList.add('hidden');
+      if (this.isMuted) {
+        // Unmute: restore last non-zero volume (or 1 if none)
+        const restore = this._lastVolume || 1;
+        this.isMuted = false;
+        this.volume  = restore;
+        slider.value = restore;
+      } else {
+        // Mute
+        if (this.volume > 0) this._lastVolume = this.volume;
+        this.isMuted = true;
+        this.volume  = 0;
+        slider.value = 0;
       }
+      this._applyVolume();
+      this._updateIcon(iconBtn, pctEl, slider);
     });
 
-    // change volume for all sounds
-    this.slider?.addEventListener('input', () => {
-      this.setVolume(parseFloat(this.slider.value));
-    });
-
-    // initial volume
-    this.setVolume(this.slider?.value || 1);
+    // Set initial state
+    slider.value = this.volume;
+    this._applyVolume();
+    this._updateIcon(iconBtn, pctEl, slider);
   }
 
-  setVolume(value) {
-    this.volume = value;
-    Object.values(this.sounds).forEach(audio => {
-      if (audio) audio.volume = value;
-    });
+  _applyVolume() {
+    const effective = this.isMuted ? 0 : this.volume;
+    Object.values(this.sounds).forEach(a => { if (a) a.volume = effective; });
+    gameState.isMuted = this.isMuted;
   }
 
-  async play(soundName) {
-    const sound = this.sounds[soundName];
-    if (!gameState.isMuted && sound) {
-      try {
-        sound.currentTime = 0;
-        await sound.play();
-      } catch (error) {
-        console.warn(`Could not play sound: ${soundName}`, error);
-      }
+  _updateIcon(btn, pctEl, slider) {
+    if (!btn) return;
+    const vol = this.isMuted ? 0 : this.volume;
+    const pct = Math.round(vol * 100);
+
+    if (pctEl) pctEl.textContent = `${pct}%`;
+    if (slider) slider.value = vol;
+
+    // Update fill track colour via CSS custom property
+    const fillPct = pct;
+    slider.style.setProperty('--fill', `${fillPct}%`);
+
+    // Icon emoji
+    btn.classList.toggle('muted', this.isMuted || vol === 0);
+    if (vol === 0 || this.isMuted)       btn.textContent = '🔇';
+    else if (vol < 0.4)                  btn.textContent = '🔈';
+    else if (vol < 0.75)                 btn.textContent = '🔉';
+    else                                 btn.textContent = '🔊';
+  }
+
+  async play(name) {
+    const s = this.sounds[name];
+    if (s && !this.isMuted) {
+      try { s.currentTime = 0; await s.play(); }
+      catch (e) { console.warn(`Audio: ${name}`, e); }
     }
   }
 
-  stop(soundName) {
-    const sound = this.sounds[soundName];
-    if (sound) {
-      sound.pause();
-      sound.currentTime = 0;
-    }
+  stop(name) {
+    const s = this.sounds[name];
+    if (s) { s.pause(); s.currentTime = 0; }
   }
 }
 
-// Best score manager
+// ─────────────────────────── BestScoreManager ───────────────────────────
 class BestScoreManager {
   getScores() {
     try {
-      const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.BEST_SCORES);
-      return saved ? JSON.parse(saved) : {};
-    } catch (error) {
-      console.warn('Could not retrieve best scores:', error);
-      return {};
-    }
+      const s = localStorage.getItem(CONFIG.STORAGE_KEYS.BEST_SCORES);
+      return s ? JSON.parse(s) : {};
+    } catch { return {}; }
   }
 
   setScore(difficulty, flips) {
     try {
       const scores = this.getScores();
-      const key = `diff-${difficulty}`;
-      const isNewRecord = !scores[key] || flips < scores[key];
-      
-      if (isNewRecord) {
+      const key    = `diff-${difficulty}`;
+      const isNew  = !scores[key] || flips < scores[key];
+      if (isNew) {
         scores[key] = flips;
         localStorage.setItem(CONFIG.STORAGE_KEYS.BEST_SCORES, JSON.stringify(scores));
       }
-      
-      return isNewRecord;
-    } catch (error) {
-      console.warn('Could not save best score:', error);
-      return false;
-    }
+      return isNew;
+    } catch { return false; }
   }
 
   updateStartHint() {
     const scores = this.getScores();
-    const key = `diff-${gameState.difficulty}`;
-    const best = scores[key];
-    const hint = document.getElementById('start-best-hint');
-    if (hint) {
-      hint.textContent = best ? `Your best on this difficulty: ${best} flips` : '';
-    }
+    const best   = scores[`diff-${gameState.difficulty}`];
+    const el     = document.getElementById('start-best-hint');
+    if (el) el.textContent = best ? `Your best: ${best} flips` : '';
   }
 
   display() {
-    const scores = this.getScores();
-    const key = `diff-${gameState.difficulty}`;
-    const best = scores[key];
-    const bestScoreElement = document.getElementById('best-score');
-    
-    if (bestScoreElement) {
-      bestScoreElement.textContent = best ? `Best: ${best} flips` : 'Best: --';
-    }
+    const best = this.getScores()[`diff-${gameState.difficulty}`];
+    const el   = document.getElementById('best-score');
+    if (el) el.textContent = best ? `Best: ${best} flips` : 'Best: --';
   }
 
   displayAll() {
     const scores = this.getScores();
-    const difficulties = [
-      { label: 'LeEasy', value: 12 },
-      { label: 'LeMedium', value: 8 },
-      { label: 'LeHard', value: 4 },
-      { label: 'LeExtreme', value: 0 }
+    const diffs  = [
+      { label: 'LeEasy',   value: 12 },
+      { label: 'LeMedium', value: 8  },
+      { label: 'LeHard',   value: 4  },
+      { label: 'LeExtreme',value: 0  }
     ];
     let html = '<div class="best-score-list-title">Best Flip Records</div><ul class="best-score-list">';
-    difficulties.forEach(diff => {
-      const key = `diff-${diff.value}`;
-      const score = scores[key] ? `${scores[key]} flips` : '--';
-      html += `<li>${diff.label}: <span>${score}</span></li>`;
+    diffs.forEach(d => {
+      const s = scores[`diff-${d.value}`];
+      html += `<li>${d.label}: <span>${s ? s + ' flips' : '--'}</span></li>`;
     });
     html += '</ul>';
 
-    let modal = document.getElementById('best-score-modal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'best-score-modal';
-      modal.className = 'best-score-modal';
-      modal.innerHTML = `<div class="best-score-modal-content">${html}<button id="close-best-score-modal">Close</button></div>`;
-      document.body.appendChild(modal);
-      document.getElementById('close-best-score-modal').onclick = () => {
-        modal.classList.add('hidden');
-      };
-    } else {
-      modal.querySelector('.best-score-modal-content').innerHTML = `${html}<button id="close-best-score-modal">Close</button>`;
-      document.getElementById('close-best-score-modal').onclick = () => {
-        modal.classList.add('hidden');
-      };
-    }
+    const modal = document.getElementById('best-score-modal');
+    if (!modal) return;
+    modal.querySelector('.best-score-modal-content').innerHTML =
+      `${html}<button id="close-best-score-modal"
+        class="mt-2 px-6 py-2.5 bg-[#FDBB30] text-[#041E42] border-0
+               rounded-lg text-[1em] cursor-pointer font-bold tracking-widest
+               transition-transform duration-150 hover:scale-105 active:scale-95
+               [font-family:NBACavaliers,serif]">Close</button>`;
+    document.getElementById('close-best-score-modal').onclick = () => modal.classList.add('hidden');
     modal.classList.remove('hidden');
   }
 }
 
-// Card manager for better separation of concerns
+// ─────────────────────────── CardManager ───────────────────────────
 class CardManager {
   constructor() {
     this.container = document.querySelector('.card-container');
   }
- 
-  createCards() {
-    // Clear existing cards
-    this.container.querySelectorAll('.card').forEach(card => card.remove());
 
-    let numCards, gridColumns;
+  createCards() {
+    this.container.querySelectorAll('.card').forEach(c => c.remove());
+
+    let numCards, cols;
     switch (gameState.difficulty) {
-      case 12: numCards = 12; gridColumns = 4; break; // LeEasy:    4x3
-      case 8:  numCards = 16; gridColumns = 4; break; // LeMedium:  4x4
-      case 4:  numCards = 20; gridColumns = 5; break; // LeHard:    5x4
-      case 0:  numCards = 24; gridColumns = 6; break; // LeExtreme: 6x4
-      default: numCards = 12; gridColumns = 4;
+      case 12: numCards = 12; cols = 4; break;
+      case 8:  numCards = 16; cols = 4; break;
+      case 4:  numCards = 20; cols = 5; break;
+      case 0:  numCards = 24; cols = 6; break;
+      default: numCards = 12; cols = 4;
     }
 
-    // Expose column count as a CSS variable so card sizing is fully CSS-driven
-    this.container.style.setProperty('--cols', gridColumns);
-    this.container.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
-    this.container.style.gridTemplateRows = '';
+    this.container.style.setProperty('--cols', cols);
+    this.container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    this.container.style.gridTemplateRows    = '';
 
-    const cardImages = CONFIG.CARD_IMAGES.slice(0, numCards);
-    this.shuffleArray(cardImages);
-
-    cardImages.forEach((imageName) => {
-      const card = this.createCard(imageName);
-      this.container.appendChild(card);
-    });
-
+    const images = CONFIG.CARD_IMAGES.slice(0, numCards);
+    this._shuffle(images);
+    images.forEach(img => this.container.appendChild(this._makeCard(img)));
     gameState.cards = Array.from(this.container.querySelectorAll('.card'));
   }
 
-  // Shuffle array using Fisher-Yates algorithm
-  shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
+  _shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
   }
 
-  createCard(imageName) {
+  _makeCard(imgName) {
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
@@ -316,70 +298,77 @@ class CardManager {
         <img class="card-back-img" src="Assets/Images/${CONFIG.CARD_BACK_IMAGE}" alt="Card back">
       </div>
       <div class="card-front card-face">
-        <img class="card-value" src="Assets/Images/${imageName}" alt="LeBron card">
-      </div>
-    `;
-    
+        <img class="card-value" src="Assets/Images/${imgName}" alt="LeBron card">
+      </div>`;
     card.addEventListener('click', () => gameController.flipCard(card));
     return card;
   }
 
   resetCards() {
-    gameState.cards.forEach(card => {
-      card.classList.remove('visible', 'matched');
-    });
+    gameState.cards.forEach(c => c.classList.remove('visible', 'matched'));
   }
 
   getCardImage(card) {
-    const cardValue = card.querySelector('.card-value');
-    return cardValue ? cardValue.src : null;
+    return card.querySelector('.card-value')?.src ?? null;
   }
 }
 
-// Main game controller
+// ─────────────────────────── GameController ───────────────────────────
 class GameController {
   constructor() {
-    this.audioController = new AudioController();
+    this.audioController  = new AudioController();
     this.bestScoreManager = new BestScoreManager();
-    this.cardManager = new CardManager();
-    this.uiManager = new UIManager();
+    this.cardManager      = new CardManager();
+    this.uiManager        = new UIManager();
   }
 
   async startGame() {
-    gameState.isPlaying = true;
+    gameState.isPlaying     = true;
     gameState.timeRemaining = gameState.timeLimit;
-    gameState.flips = 0;
-    gameState.matchedCards = [];
-    gameState.cardToCheck = null;
-    
-    // Reset progress bar
+    gameState.flips         = 0;
+    gameState.matchedCards  = [];
+    gameState.cardToCheck   = null;
+
     const bar = document.getElementById('progress-bar');
     if (bar) bar.style.width = '0%';
-
-    // Remove any lingering timer warning
     document.getElementById('time-info')?.classList.remove('timer-warning');
-    
+
     gameState.updateUI();
     this.cardManager.createCards();
-    this.updateDifficultyBadge();
+    this.syncDifficultyUI();
     gameState.startTimer();
     await this.audioController.play('bgm');
     this.bestScoreManager.display();
   }
 
-  updateDifficultyBadge() {
-    const labels = { 12: 'LeEasy', 8: 'LeMedium', 4: 'LeHard', 0: 'LeExtreme' };
-    const badge = document.getElementById('difficulty-badge');
-    if (badge) badge.textContent = labels[gameState.difficulty] || 'LeEasy';
+  // Single source of truth for all difficulty-related UI updates
+  syncDifficultyUI() {
+    const label = CONFIG.DIFF_LABELS[gameState.difficulty] ?? 'LeEasy';
+
+    // Overlay label
+    const overlayLabel = document.getElementById('overlay-difficulty-label');
+    if (overlayLabel) overlayLabel.textContent = label;
+
+    // Start overlay pills
+    document.querySelectorAll('.start-diff-pill').forEach(p => {
+      p.classList.toggle('active', parseInt(p.dataset.difficulty) === gameState.difficulty);
+    });
+
+    // Gear dropdown pills
+    document.querySelectorAll('.diff-pill').forEach(p => {
+      p.classList.toggle('active', parseInt(p.dataset.difficulty) === gameState.difficulty);
+    });
+
+    // Best hint
+    this.bestScoreManager.updateStartHint();
+    this.bestScoreManager.display();
   }
 
   flipCard(card) {
     if (!this.canFlipCard(card)) return;
-    
     this.audioController.play('flip');
     gameState.incrementFlips();
     card.classList.add('visible');
-    
     if (gameState.cardToCheck) {
       this.checkForMatch(card);
     } else {
@@ -388,44 +377,33 @@ class GameController {
   }
 
   canFlipCard(card) {
-    return gameState.isPlaying && 
-           !gameState.matchedCards.includes(card) && 
+    return gameState.isPlaying &&
+           !gameState.matchedCards.includes(card) &&
            card !== gameState.cardToCheck &&
            !card.classList.contains('visible');
   }
 
   checkForMatch(card) {
-    const cardImage = this.cardManager.getCardImage(card);
-    const checkCardImage = this.cardManager.getCardImage(gameState.cardToCheck);
-    const isMatch = cardImage === checkCardImage;
-    
-    if (isMatch) {
-      this.handleMatch(card, gameState.cardToCheck);
-    } else {
-      this.handleMismatch(card, gameState.cardToCheck);
-    }
-    
+    const match = this.cardManager.getCardImage(card) === this.cardManager.getCardImage(gameState.cardToCheck);
+    match ? this.handleMatch(card, gameState.cardToCheck)
+          : this.handleMismatch(card, gameState.cardToCheck);
     gameState.cardToCheck = null;
   }
 
-  async handleMatch(card1, card2) {
-    gameState.addMatchedCards(card1, card2);
-    card1.classList.add('matched');
-    card2.classList.add('matched');
-    
+  async handleMatch(c1, c2) {
+    gameState.addMatchedCards(c1, c2);
+    c1.classList.add('matched');
+    c2.classList.add('matched');
     await this.audioController.play('match');
-    
-    if (gameState.isGameComplete()) {
+    if (gameState.isGameComplete())
       setTimeout(() => this.endGame(true), CONFIG.DELAYS.VICTORY_DELAY);
-    }
   }
 
-  handleMismatch(card1, card2) {
+  handleMismatch(c1, c2) {
     gameState.isPlaying = false;
-    
     setTimeout(() => {
-      card1.classList.remove('visible');
-      card2.classList.remove('visible');
+      c1.classList.remove('visible');
+      c2.classList.remove('visible');
       gameState.isPlaying = true;
     }, CONFIG.DELAYS.CARD_FLIP_BACK);
   }
@@ -435,191 +413,177 @@ class GameController {
     gameState.stopTimer();
     document.getElementById('time-info')?.classList.remove('timer-warning');
     this.audioController.stop('bgm');
-    
+
     if (victory) {
-      const isNewRecord = this.bestScoreManager.setScore(gameState.difficulty, gameState.flips);
-
-      // Populate game summary
-      const diffLabels = { 12: 'LeEasy', 8: 'LeMedium', 4: 'LeHard', 0: 'LeExtreme' };
-      const sumFlips = document.getElementById('summary-flips');
-      const sumTime  = document.getElementById('summary-time');
-      const sumDiff  = document.getElementById('summary-difficulty');
-      if (sumFlips) sumFlips.textContent = gameState.flips;
-      if (sumTime)  sumTime.textContent  = `${gameState.timeRemaining}s`;
-      if (sumDiff)  sumDiff.textContent  = diffLabels[gameState.difficulty] || '--';
-
+      const isNew = this.bestScoreManager.setScore(gameState.difficulty, gameState.flips);
+      document.getElementById('summary-flips').textContent      = gameState.flips;
+      document.getElementById('summary-time').textContent       = `${gameState.timeRemaining}s`;
+      document.getElementById('summary-difficulty').textContent = CONFIG.DIFF_LABELS[gameState.difficulty] ?? '--';
       this.uiManager.showOverlay('victory-overlay');
-      
-      if (isNewRecord) {
-        this.uiManager.showNewRecord();
-      }
-
-      // Confetti!
+      if (isNew) this.uiManager.showNewRecord();
       this.launchConfetti();
       await this.audioController.play('victory');
     } else {
       this.uiManager.showOverlay('game-over-overlay');
       await this.audioController.play('gameOver');
     }
-    
     this.bestScoreManager.display();
   }
 
   launchConfetti() {
     if (typeof confetti === 'undefined') return;
     const canvas = document.getElementById('confetti-canvas');
-    const myConfetti = confetti.create(canvas, { resize: true, useWorker: true });
-    const gold = '#FDBB30', navy = '#041E42', white = '#ffffff';
-
-    myConfetti({ particleCount: 80, spread: 70, origin: { y: 0.6 }, colors: [gold, navy, white] });
-    setTimeout(() => myConfetti({ particleCount: 60, spread: 100, origin: { y: 0.5 }, colors: [gold, white] }), 400);
-    setTimeout(() => myConfetti({ particleCount: 40, angle: 60,  spread: 55, origin: { x: 0, y: 0.6 }, colors: [gold, navy] }), 700);
-    setTimeout(() => myConfetti({ particleCount: 40, angle: 120, spread: 55, origin: { x: 1, y: 0.6 }, colors: [gold, navy] }), 700);
+    const fx     = confetti.create(canvas, { resize: true, useWorker: true });
+    const g = '#FDBB30', n = '#041E42', w = '#ffffff';
+    fx({ particleCount: 80, spread: 70,  origin: { y: 0.6 },              colors: [g, n, w] });
+    setTimeout(() => fx({ particleCount: 60, spread: 100, origin: { y: 0.5 },              colors: [g, w] }),   400);
+    setTimeout(() => fx({ particleCount: 40, angle: 60,   spread: 55, origin: { x: 0, y: 0.6 }, colors: [g, n] }), 700);
+    setTimeout(() => fx({ particleCount: 40, angle: 120,  spread: 55, origin: { x: 1, y: 0.6 }, colors: [g, n] }), 700);
   }
 
+  // Called by both dropdown pills and start-overlay pills
   setDifficulty(difficulty, timeLimit) {
-    gameState.difficulty = difficulty;
-    gameState.timeLimit = timeLimit;
+    gameState.difficulty    = difficulty;
+    gameState.timeLimit     = timeLimit;
     gameState.timeRemaining = timeLimit;
-    gameState.flips = 0;
-    gameState.matchedCards = [];
-    
+    gameState.flips         = 0;
+    gameState.matchedCards  = [];
+
+    // Reset progress bar
+    const bar = document.getElementById('progress-bar');
+    if (bar) bar.style.width = '0%';
+
     try {
-      localStorage.setItem(CONFIG.STORAGE_KEYS.DIFFICULTY, difficulty);
-      localStorage.setItem(CONFIG.STORAGE_KEYS.TIME_LIMIT, timeLimit);
-    } catch (error) {
-      console.warn('Could not save difficulty settings:', error);
-    }
-    
+      localStorage.setItem(CONFIG.STORAGE_KEYS.DIFFICULTY,  difficulty);
+      localStorage.setItem(CONFIG.STORAGE_KEYS.TIME_LIMIT,  timeLimit);
+    } catch { /* ignore */ }
+
     this.cardManager.createCards();
     this.cardManager.resetCards();
-    this.bestScoreManager.display();
-    this.bestScoreManager.updateStartHint();
-    this.updateDifficultyBadge();
+    this.syncDifficultyUI();
     gameState.updateUI();
   }
 
   loadSettings() {
     try {
-      const savedDifficulty = localStorage.getItem(CONFIG.STORAGE_KEYS.DIFFICULTY);
-      const savedTimeLimit = localStorage.getItem(CONFIG.STORAGE_KEYS.TIME_LIMIT);
-      
-      if (savedDifficulty && savedTimeLimit) {
-        gameState.difficulty = parseInt(savedDifficulty);
-        gameState.timeLimit = parseInt(savedTimeLimit);
+      const d = localStorage.getItem(CONFIG.STORAGE_KEYS.DIFFICULTY);
+      const t = localStorage.getItem(CONFIG.STORAGE_KEYS.TIME_LIMIT);
+      if (d && t) {
+        gameState.difficulty = parseInt(d);
+        gameState.timeLimit  = parseInt(t);
       }
-    } catch (error) {
-      console.warn('Could not load settings:', error);
-    }
+    } catch { /* ignore */ }
   }
 
   init() {
     this.loadSettings();
     this.cardManager.createCards();
-    this.bestScoreManager.display();
-    this.bestScoreManager.updateStartHint();
-    this.updateDifficultyBadge();
+    this.syncDifficultyUI();
     this.uiManager.init();
   }
 }
 
-// UI Manager for better organization
+// ─────────────────────────── UIManager ───────────────────────────
 class UIManager {
-  showOverlay(overlayId) {
-    document.querySelectorAll('.overlay').forEach(overlay => {
-      overlay.classList.add('hidden');
-      overlay.classList.remove('fading-in');
+  showOverlay(id) {
+    document.querySelectorAll('.overlay').forEach(o => {
+      o.classList.add('hidden');
+      o.classList.remove('fading-in');
     });
-    const el = document.getElementById(overlayId);
+    const el = document.getElementById(id);
     if (el) {
       el.classList.remove('hidden');
-      // Trigger reflow then animate
-      void el.offsetWidth;
+      void el.offsetWidth;           // trigger reflow
       el.classList.add('fading-in');
     }
   }
 
-  hideOverlay(overlayId) {
-    document.getElementById(overlayId)?.classList.add('hidden');
+  hideOverlay(id)   { document.getElementById(id)?.classList.add('hidden'); }
+  showNewRecord()   { document.getElementById('new-record')?.classList.remove('hidden'); }
+  hideNewRecord()   { document.getElementById('new-record')?.classList.add('hidden'); }
+  showSettings()    { document.getElementById('settings-modal')?.classList.remove('hidden'); }
+  hideSettings()    { document.getElementById('settings-modal')?.classList.add('hidden'); }
+
+  // Gear dropdown
+  openDropdown()  { document.getElementById('gear-dropdown')?.classList.remove('hidden'); }
+  closeDropdown() { document.getElementById('gear-dropdown')?.classList.add('hidden'); }
+  toggleDropdown() {
+    const d = document.getElementById('gear-dropdown');
+    d?.classList.contains('hidden') ? this.openDropdown() : this.closeDropdown();
   }
 
-  showNewRecord() {
-    document.getElementById('new-record')?.classList.remove('hidden');
-  }
+  init() { this._setupListeners(); }
 
-  hideNewRecord() {
-    document.getElementById('new-record')?.classList.add('hidden');
-  }
-
-  showSettings() {
-    document.getElementById('settings-modal')?.classList.remove('hidden');
-  }
-
-  hideSettings() {
-    document.getElementById('settings-modal')?.classList.add('hidden');
-  }
-
-  init() {
-    this.setupEventListeners();
-  }
-
-  setupEventListeners() {
-    // Settings button
-    document.getElementById('settings-btn')?.addEventListener('click', () => {
-      this.showSettings();
+  _setupListeners() {
+    // ── Gear button toggles dropdown ──
+    document.getElementById('gear-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleDropdown();
     });
 
-    // Difficulty badge also opens settings
-    document.getElementById('difficulty-badge')?.addEventListener('click', () => {
-      this.showSettings();
+    // Close dropdown on outside click or Escape
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#gear-container'))
+        this.closeDropdown();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { this.closeDropdown(); this.hideSettings(); }
     });
 
-    // Settings modal click outside to close
+    // ── Dropdown difficulty pills ──
+    document.querySelectorAll('.diff-pill').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        gameController.setDifficulty(parseInt(btn.dataset.difficulty), parseInt(btn.dataset.time));
+        // keep dropdown open so player sees the active pill update
+      });
+    });
+
+    // ── Start overlay difficulty pills ──
+    document.querySelectorAll('.start-diff-pill').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        gameController.setDifficulty(parseInt(btn.dataset.difficulty), parseInt(btn.dataset.time));
+      });
+    });
+
+    // ── Settings modal (full-screen picker) ──
+    // No longer opened from gear — kept for any future entry point
     document.getElementById('settings-modal')?.addEventListener('click', (e) => {
-      if (e.target.classList.contains('settings-modal')) {
-        this.hideSettings();
-      }
+      if (e.target.classList.contains('settings-modal')) this.hideSettings();
     });
-
-    // Best Score button
-    document.getElementById('best-score')?.addEventListener('click', () => {
-      gameController.bestScoreManager.displayAll();
+    document.getElementById('close-settings-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.hideSettings();
     });
-
-    // Sound button
-    document.getElementById('sound-btn')?.addEventListener('click', () => {
-      gameController.audioController.toggleMute();
-    });
-
-    // Difficulty buttons
     document.querySelectorAll('.difficulty-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const difficulty = parseInt(btn.dataset.difficulty);
-        const timeLimit = parseInt(btn.dataset.time);
-        gameController.setDifficulty(difficulty, timeLimit);
+        gameController.setDifficulty(parseInt(btn.dataset.difficulty), parseInt(btn.dataset.time));
         this.hideSettings();
       });
     });
 
-    // Dedicated New Game / Start buttons
+    // ── Best score ──
+    document.getElementById('best-score')?.addEventListener('click', () => {
+      gameController.bestScoreManager.displayAll();
+    });
+
+    // ── Overlay start / play-again buttons ──
     const startAction = (e) => {
       e.stopPropagation();
-      this.hideOverlay('start-overlay');
-      this.hideOverlay('victory-overlay');
-      this.hideOverlay('game-over-overlay');
+      ['start-overlay','victory-overlay','game-over-overlay'].forEach(id => this.hideOverlay(id));
       this.hideNewRecord();
       gameController.startGame();
     };
-
     document.getElementById('start-btn')?.addEventListener('click', startAction);
     document.getElementById('victory-btn')?.addEventListener('click', startAction);
     document.getElementById('game-over-btn')?.addEventListener('click', startAction);
 
-    // Click-anywhere fallback on overlays (for returning players)
+    // Click-anywhere fallback on overlays
     document.querySelectorAll('.overlay').forEach(overlay => {
       overlay.addEventListener('click', (e) => {
-        // Don't trigger if they clicked the button (button handles it)
-        if (e.target.classList.contains('new-game-btn')) return;
+        if (e.target.classList.contains('new-game-btn') ||
+            e.target.classList.contains('start-diff-pill')) return;
         this.hideOverlay(overlay.id);
         this.hideNewRecord();
         gameController.startGame();
@@ -628,18 +592,12 @@ class UIManager {
   }
 }
 
-// Initialize game instances
-const gameState = new GameState();
+// ─────────────────────────── Bootstrap ───────────────────────────
+const gameState      = new GameState();
 const gameController = new GameController();
 
-// Initialize when DOM is ready
-const initGame = () => {
-  gameController.init();
-};
-
-// Use modern event listener approach
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initGame);
+  document.addEventListener('DOMContentLoaded', () => gameController.init());
 } else {
-  initGame();
+  gameController.init();
 }
