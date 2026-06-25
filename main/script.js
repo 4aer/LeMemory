@@ -310,17 +310,18 @@ class CardManager {
     // Clear existing cards
     this.container.querySelectorAll('.card').forEach(card => card.remove());
 
-    let numCards, gridColumns;
+    let numCards, gridColumns, gridRows;
     switch (gameState.difficulty) {
-      case 12: numCards = 12; gridColumns = 4; break; // LeEasy:    4x3
-      case 8:  numCards = 16; gridColumns = 4; break; // LeMedium:  4x4
-      case 4:  numCards = 20; gridColumns = 5; break; // LeHard:    5x4
-      case 0:  numCards = 24; gridColumns = 6; break; // LeExtreme: 6x4
-      default: numCards = 12; gridColumns = 4;
+      case 12: numCards = 12; gridColumns = 4; gridRows = 3; break; // LeEasy:    4x3
+      case 8:  numCards = 16; gridColumns = 4; gridRows = 4; break; // LeMedium:  4x4
+      case 4:  numCards = 20; gridColumns = 5; gridRows = 4; break; // LeHard:    5x4
+      case 0:  numCards = 24; gridColumns = 6; gridRows = 4; break; // LeExtreme: 6x4
+      default: numCards = 12; gridColumns = 4; gridRows = 3;
     }
 
-    // Expose column count as a CSS variable so card sizing is fully CSS-driven
+    // Expose column and row count as CSS variables so card sizing is fully CSS-driven
     this.container.style.setProperty('--cols', gridColumns);
+    this.container.style.setProperty('--rows', gridRows);
     this.container.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
     this.container.style.gridTemplateRows = '';
 

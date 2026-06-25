@@ -16,16 +16,29 @@
     /* ── Card CSS custom properties ── */
     .card-container {
       --cols: 4;
-      --gap: clamp(4px, 1.2vw, 10px);
-      --card-w: min(
-        calc((min(96vw, 680px) - (var(--cols) - 1) * var(--gap)) / var(--cols)),
-        125px
-      );
+      --rows: 3;
+      --gap: clamp(3px, 1vw, 8px);
+
+      /* Available space after HUD (title ~80px + hud ~60px + progress ~24px + margins ~30px) */
+      --hud-h: 194px;
+      --avail-w: min(96vw, calc(var(--cols) * 130px + (var(--cols) - 1) * var(--gap)));
+      --avail-h: calc(100dvh - var(--hud-h));
+
+      /* Card width: fit within available width */
+      --card-w-by-cols: calc((var(--avail-w) - (var(--cols) - 1) * var(--gap)) / var(--cols));
+      /* Card height (7:5 ratio): fit within available height */
+      --card-h-by-rows: calc((var(--avail-h) - (var(--rows) - 1) * var(--gap)) / var(--rows));
+      /* Card width derived from height constraint */
+      --card-w-by-rows: calc(var(--card-h-by-rows) * 5 / 7);
+
+      /* Use whichever is smaller so cards fit both axes */
+      --card-w: min(var(--card-w-by-cols), var(--card-w-by-rows), 120px);
       --card-h: calc(var(--card-w) * 7 / 5);
+
       display: grid;
       grid-template-columns: repeat(var(--cols), var(--card-w));
       gap: var(--gap);
-      margin: 8px auto;
+      margin: 6px auto;
       width: fit-content;
       max-width: 96vw;
       perspective: 500px;
@@ -471,21 +484,21 @@
   </div>
 
   <!-- ── Game Title ── -->
-  <h1 class="text-[#860038] font-normal text-center text-[clamp(2em,6vw,4.5em)]
-             mt-5 mb-5 [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
+  <h1 class="text-[#860038] font-normal text-center text-[clamp(1.6em,4.5vw,3.5em)]
+             mt-3 mb-2 [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
     LeBron James Memory Game
   </h1>
 
   <!-- ── HUD ── -->
-  <div class="game-info-container flex justify-between items-center mb-2.5
+  <div class="game-info-container flex justify-between items-center mb-1.5
               gap-[clamp(2em,10vw,8em)] w-[min(96vw,680px)]">
     <div id="time-info"
-         class="game-info text-[#FDBB30] whitespace-nowrap text-[clamp(1.8em,5vw,4em)]
+         class="game-info text-[#FDBB30] whitespace-nowrap text-[clamp(1.4em,4vw,3em)]
                 [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
       TIME: <span id="time-remaining">--</span>
     </div>
     <div id="flips-info"
-         class="game-info text-[#FDBB30] whitespace-nowrap text-[clamp(1.8em,5vw,4em)]
+         class="game-info text-[#FDBB30] whitespace-nowrap text-[clamp(1.4em,4vw,3em)]
                 [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
       FLIPS: <span id="flip-count">0</span>
     </div>
